@@ -1,15 +1,16 @@
 {
-  "name": "fake.sh",
-  "description": "Easy to use, multi-tenant and secure Mock REST and GraphQL API server.",
+  "name": "@fake.sh/tsconfig",
+  "description": "TypeScript configuration files for Fake.sh monorepo",
   "version": "0.0.0",
   "private": true,
   "author": "Batin Evirgen <hi@batin.sh> (https://www.batin.sh)",
   "homepage": "https://www.github.com/Stradi/fake.sh",
   "repository": {
     "type": "git",
-    "url": "https://www.github.com/Stradi/fake.sh.git"
+    "url": "https://www.github.com/Stradi/fake.sh.git",
+    "directory": "packages/tsconfig"
   },
   "devDependencies": {
-    "@fake.sh/tsconfig": "workspace:^"
+    "bun-types": "^1.0.22"
   }
 }
