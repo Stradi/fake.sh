@@ -5,8 +5,10 @@ import type { Context } from 'hono';
 import ensureValidRequestMiddleware from './ensure-valid-request-middleware';
 import type { RequestInfo } from './helpers';
 import { extractRequestInfo } from './helpers';
-import validateResourceMiddleware from './validate-resource-middleware';
-import validateVersionMiddleware from './validate-version-middleware';
+import ensureValidRequestMiddleware from './middlewares/ensure-valid-request-middleware';
+import validateResourceMiddleware from './middlewares/validate-resource-middleware';
+import extractTenantMiddleware from './middlewares/validate-tenant-middleware';
+import validateVersionMiddleware from './middlewares/validate-version-middleware';
 
 export default class TenantController extends BaseController {
   public router() {

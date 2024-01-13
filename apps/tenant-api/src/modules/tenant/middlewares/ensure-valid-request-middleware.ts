@@ -1,6 +1,6 @@
 import BaseError from '@utils/errors/base-error';
 import { type MiddlewareHandler } from 'hono';
-import { extractRequestInfo } from './helpers';
+import { extractRequestInfo } from '../helpers';
 
 const Methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as const;
 const MethodsRequiresIdentifier = ['PUT', 'PATCH', 'DELETE'];
