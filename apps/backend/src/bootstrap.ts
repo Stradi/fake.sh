@@ -1,5 +1,6 @@
 import beNiceMiddleware from '@lib/middlewares/be-nice-middleware';
 import errorMiddleware from '@lib/middlewares/error-middleware';
+import loggerMiddleware from '@lib/middlewares/logger-middleware';
 import notFoundMiddleware from '@lib/middlewares/not-found-middleware';
 import { log } from '@utils/logger';
 import { Hono } from 'hono';
@@ -17,6 +18,7 @@ export function getServer() {
       requestsServed++;
       await next();
     },
+    loggerMiddleware(),
     beNiceMiddleware()
   );
 
