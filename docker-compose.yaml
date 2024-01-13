@@ -1,0 +1,14 @@
+services:
+  tenant-api:
+    build:
+      context: .
+      dockerfile: ./apps/backend/Dockerfile
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      - shared
+
+networks:
+  shared:
+    name: shared
