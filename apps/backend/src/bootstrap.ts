@@ -1,3 +1,6 @@
+import beNiceMiddleware from '@lib/middlewares/be-nice-middleware';
+import errorMiddleware from '@lib/middlewares/error-middleware';
+import notFoundMiddleware from '@lib/middlewares/not-found-middleware';
 import { log } from '@utils/logger';
 import { Hono } from 'hono';
 
@@ -8,10 +11,17 @@ export function getServer() {
     strict: false,
   });
 
-  app.use('*', async (_, next) => {
-    requestsServed++;
-    await next();
-  });
+  app.use(
+    '*',
+    async (_, next) => {
+      requestsServed++;
+      await next();
+    },
+    beNiceMiddleware()
+  );
+
+  app.onError(errorMiddleware());
+  app.notFound(notFoundMiddleware());
 
   return app;
 }
