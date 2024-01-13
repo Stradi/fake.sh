@@ -1,0 +1,17 @@
+{
+  "name": "eslint-config-fakesh",
+  "description": "ESLint configuration files for Fake.sh monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "author": "Batin Evirgen <hi@batin.sh> (https://www.batin.sh)",
+  "homepage": "https://www.github.com/Stradi/fake.sh",
+  "repository": {
+    "type": "git",
+    "url": "https://www.github.com/Stradi/fake.sh.git",
+    "directory": "packages/eslint-config-fakesh"
+  },
+  "devDependencies": {
+    "@vercel/style-guide": "^5.1.0",
+    "typescript": "^5.3.3"
+  }
+}
