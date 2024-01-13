@@ -10,6 +10,9 @@
     "url": "https://www.github.com/Stradi/fake.sh.git"
   },
   "devDependencies": {
-    "@fake.sh/tsconfig": "workspace:^"
+    "@commitlint/cli": "^18.4.4",
+    "@commitlint/config-conventional": "^18.4.4",
+    "@fake.sh/tsconfig": "workspace:^",
+    "husky": "^8.0.3"
   }
 }
