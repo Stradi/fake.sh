@@ -21,6 +21,18 @@ importers:
         specifier: ^8.0.3
         version: 8.0.3
 
+  apps/backend:
+    devDependencies:
+      '@fake.sh/tsconfig':
+        specifier: workspace:^
+        version: link:../../packages/tsconfig
+      eslint:
+        specifier: ^8.56.0
+        version: 8.56.0
+      eslint-config-fakesh:
+        specifier: workspace:^
+        version: link:../../packages/eslint-config-fakesh
+
   packages/eslint-config-fakesh:
     devDependencies:
       '@vercel/style-guide':
