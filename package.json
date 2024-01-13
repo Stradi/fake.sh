@@ -1,0 +1,12 @@
+{
+  "name": "fake.sh",
+  "description": "Easy to use, multi-tenant and secure Mock REST and GraphQL API server.",
+  "version": "0.0.0",
+  "private": true,
+  "author": "Batin Evirgen <hi@batin.sh> (https://www.batin.sh)",
+  "homepage": "https://www.github.com/Stradi/fake.sh",
+  "repository": {
+    "type": "git",
+    "url": "https://www.github.com/Stradi/fake.sh.git"
+  }
+}
