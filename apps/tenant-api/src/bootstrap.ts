@@ -2,6 +2,7 @@ import beNiceMiddleware from '@lib/middlewares/be-nice-middleware';
 import errorMiddleware from '@lib/middlewares/error-middleware';
 import loggerMiddleware from '@lib/middlewares/logger-middleware';
 import notFoundMiddleware from '@lib/middlewares/not-found-middleware';
+import TenantController from '@modules/tenant/tenant-controller';
 import { log } from '@utils/logger';
 import { Hono } from 'hono';
 
@@ -24,6 +25,9 @@ export function getServer() {
 
   app.onError(errorMiddleware());
   app.notFound(notFoundMiddleware());
+
+  // TODO: Maybe generate openapi ui at `api/:version` route?
+  app.route('/api/:version/:resource', new TenantController().router());
 
   return app;
 }
