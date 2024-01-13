@@ -1,6 +1,6 @@
 {
-  "name": "@fake.sh/backend",
-  "description": "Backend API for Fake.sh",
+  "name": "@fake.sh/tenant-api",
+  "description": "Tenant Backend API for Fake.sh",
   "version": "0.0.0",
   "private": true,
   "author": "Batin Evirgen <hi@batin.sh> (https://www.batin.sh)",
@@ -8,7 +8,7 @@
   "repository": {
     "type": "git",
     "url": "https://www.github.com/Stradi/fake.sh.git",
-    "directory": "apps/backend"
+    "directory": "apps/tenant-api"
   },
   "scripts": {
     "dev": "bun --hot ./src/index.ts"

@@ -2,7 +2,7 @@ services:
   tenant-api:
     build:
       context: .
-      dockerfile: ./apps/backend/Dockerfile
+      dockerfile: ./apps/tenant-api/Dockerfile
     restart: always
     ports:
       - 3000:3000
