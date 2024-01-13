@@ -1,7 +1,9 @@
+import ValidationError from '@utils/errors/validation-error';
 import type { ErrorResponseData, SuccessResponseData } from '@utils/response';
 import { resp } from '@utils/response';
 import type { Context, Env, Next } from 'hono';
 import { Hono } from 'hono';
+import { z } from 'zod';
 
 type ResponseType = Response | Promise<Response>;
 
@@ -88,5 +90,35 @@ export default class BaseController {
 
     ctx.status(405);
     return ctx.json(obj);
+  }
+
+  public async validateBody<T>(ctx: Context, schema: z.Schema<T>): Promise<T> {
+    const body = await ctx.req.json();
+    return this.validate(body, schema);
+  }
+
+  public validateQuery<T>(ctx: Context, schema: z.Schema<T>): T {
+    const queries = ctx.req.queries();
+    const normalizedQuery = Object.keys(queries).reduce<
+      Record<string, unknown>
+    >((acc, key) => {
+      const value = queries[key];
+      acc[key] = value.length === 1 ? value[0] : value;
+      return acc;
+    }, {});
+
+    return this.validate(normalizedQuery, schema);
+  }
+
+  private validate<T>(obj: unknown, schema: z.Schema<T>): T {
+    try {
+      return schema.parse(obj);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        throw new ValidationError(error);
+      }
+
+      throw error;
+    }
   }
 }
