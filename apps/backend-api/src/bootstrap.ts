@@ -5,6 +5,7 @@ import {
   loggerMiddleware,
   notFoundMiddleware,
 } from '@fake.sh/backend-common';
+import authMiddleware from '@lib/middlewares/auth-middleware';
 import ProjectsController from '@modules/projects/projects-controller';
 import SchemasController from '@modules/schemas/schemas-controller';
 import { Hono } from 'hono';
@@ -23,7 +24,8 @@ export function getServer() {
       await next();
     },
     loggerMiddleware(),
-    beNiceMiddleware()
+    beNiceMiddleware(),
+    authMiddleware()
   );
 
   app.onError(errorMiddleware());

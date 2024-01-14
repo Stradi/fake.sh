@@ -1,4 +1,5 @@
 import { log } from '@fake.sh/backend-common';
+import { accountsTable } from '@modules/accounts/accounts-schema';
 import {
   projectsRelations,
   projectsTable,
@@ -23,6 +24,7 @@ export function getDb() {
       projectsRelations,
       schemas: schemasTable,
       schemasRelations,
+      accounts: accountsTable,
     },
   });
 }

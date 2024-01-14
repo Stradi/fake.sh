@@ -8,6 +8,13 @@
       "when": 1705241298088,
       "tag": "0000_strong_nitro",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1705248732142,
+      "tag": "0001_moaning_goliath",
+      "breakpoints": true
     }
   ]
 }
