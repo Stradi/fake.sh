@@ -53,6 +53,7 @@ export default class AuthController extends BaseController {
     const token = await generateJwt({
       id: account.id,
       email: account.email,
+      groups: account.accountGroup.map((ag) => ag.group.name),
     });
 
     this.setCookie(ctx, token);
@@ -65,8 +66,8 @@ export default class AuthController extends BaseController {
   protected register: Handler<'/auth/register'> = async (ctx) => {
     const body = await this.validateBody(ctx, RegisterBody);
 
-    const account = await this.authService.register(body);
-    if (!account) {
+    const record = await this.authService.register(body);
+    if (!record) {
       return this.badRequest(ctx, {
         code: 'CREDENTIALS_ALREADY_EXISTS',
         message: 'Provided credentials already exists',
@@ -75,8 +76,9 @@ export default class AuthController extends BaseController {
     }
 
     const token = await generateJwt({
-      id: account.id,
-      email: account.email,
+      id: record.account.id,
+      email: record.account.email,
+      groups: record.groups.map((g) => g.name),
     });
 
     this.setCookie(ctx, token);
@@ -104,6 +106,7 @@ export default class AuthController extends BaseController {
       ...jwtPayload,
       id: account.id,
       email: account.email,
+      groups: account.accountGroup.map((ag) => ag.group.name),
     });
 
     this.setCookie(ctx, newToken);

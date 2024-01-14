@@ -1,6 +1,8 @@
-import { generateId } from '@fake.sh/backend-common';
+import { generateId, log } from '@fake.sh/backend-common';
 import { getDb } from '@lib/database';
 import { accountsTable } from '@modules/accounts/accounts-schema';
+import { groupsTable } from '@modules/groups/groups-schema';
+import { accountGroupTable } from '@modules/shared/account-group-schema';
 import { eq } from 'drizzle-orm';
 import type { LoginBody, RegisterBody } from './auth-dto';
 
@@ -10,6 +12,13 @@ export default class AuthService {
   public async login(body: LoginBody) {
     const records = await this.db.query.accounts.findMany({
       where: eq(accountsTable.email, body.email),
+      with: {
+        accountGroup: {
+          with: {
+            group: true,
+          },
+        },
+      },
     });
 
     if (records.length === 0) {
@@ -43,6 +52,25 @@ export default class AuthService {
       return null;
     }
 
-    return records[0];
+    const registeredGroup = (
+      await this.db.query.groups.findMany({
+        where: eq(groupsTable.name, 'Registered User'),
+      })
+    )[0];
+
+    if (!registeredGroup) {
+      log.fatal('Registered User group not found');
+      return null;
+    }
+
+    await this.db.insert(accountGroupTable).values({
+      account_id: records[0].id,
+      group_id: registeredGroup.id,
+    });
+
+    return {
+      account: records[0],
+      groups: [registeredGroup],
+    };
   }
 }

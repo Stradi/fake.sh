@@ -11,6 +11,13 @@ export default class PermissionsService {
     const records = await this.db.query.permissions.findMany({
       limit: query.limit || 10,
       offset: query.page ? (query.page - 1) * (query.limit || 10) : 0,
+      with: {
+        groupPermissions: {
+          with: {
+            group: true,
+          },
+        },
+      },
     });
 
     return records;
@@ -19,6 +26,13 @@ export default class PermissionsService {
   public async show(id: string) {
     const records = await this.db.query.permissions.findMany({
       where: eq(permissionsTable.id, id),
+      with: {
+        groupPermissions: {
+          with: {
+            group: true,
+          },
+        },
+      },
     });
 
     if (records.length === 0) {

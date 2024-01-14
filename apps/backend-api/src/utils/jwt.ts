@@ -16,6 +16,7 @@ export type RegisteredJwtClaims = {
 export type CustomJwtClaims = {
   id: string;
   email: string;
+  groups: string[];
 };
 
 export type JwtClaims = RegisteredJwtClaims & CustomJwtClaims;

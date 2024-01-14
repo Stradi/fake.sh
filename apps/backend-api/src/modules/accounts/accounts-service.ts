@@ -10,6 +10,13 @@ export default class AccountsService {
     const records = await this.db.query.accounts.findMany({
       limit: query.limit || 10,
       offset: query.page ? (query.page - 1) * (query.limit || 10) : 0,
+      with: {
+        accountGroup: {
+          with: {
+            group: true,
+          },
+        },
+      },
     });
 
     return records;
@@ -18,6 +25,13 @@ export default class AccountsService {
   public async show(id: string) {
     const records = await this.db.query.accounts.findMany({
       where: eq(accountsTable.id, id),
+      with: {
+        accountGroup: {
+          with: {
+            group: true,
+          },
+        },
+      },
     });
 
     if (records.length === 0) {
