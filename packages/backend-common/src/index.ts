@@ -10,6 +10,7 @@ export {
   type ErrorProperties,
 } from './utils/errors/base-error';
 export { default as ValidationError } from './utils/errors/validation-error';
+export { generateId, slugify } from './utils/id';
 export { log } from './utils/logger';
 export {
   resp,
