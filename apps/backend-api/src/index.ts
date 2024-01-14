@@ -1,9 +1,11 @@
 import { env, log } from '@fake.sh/backend-common';
-import { runMigrations } from '@lib/database';
+import { runMigrations, seedDatabase } from '@lib/database';
 import { addShutdownEventListeners, getServer } from 'bootstrap';
 
 addShutdownEventListeners();
 await runMigrations();
+
+await seedDatabase();
 
 const port = env('PORT', 3000);
 Bun.serve({

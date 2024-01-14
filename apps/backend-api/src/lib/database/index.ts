@@ -28,6 +28,10 @@ import Database from 'bun:sqlite';
 import { drizzle } from 'drizzle-orm/bun-sqlite';
 import { migrate } from 'drizzle-orm/bun-sqlite/migrator';
 import fs from 'node:fs/promises';
+// eslint-disable-next-line import/no-cycle -- ¯\_(ツ)_/¯
+import { seedGroups } from './seed/groups';
+// eslint-disable-next-line import/no-cycle -- ¯\_(ツ)_/¯
+import { seedPermissions } from './seed/permissions';
 
 export function getDb() {
   const file = new Database(`${process.cwd()}/data/main.sqlite`, {
@@ -67,4 +71,9 @@ export async function runMigrations() {
   });
 
   log.info('All migrations ran successfully');
+}
+
+export async function seedDatabase() {
+  await seedGroups();
+  await seedPermissions();
 }
