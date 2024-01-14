@@ -1,4 +1,5 @@
 export { default as BaseController, type Handler } from './lib/base-controller';
+export { default as CrudController } from './lib/crud-controller';
 export { default as beNiceMiddleware } from './lib/middlewares/be-nice-middleware';
 export { default as errorMiddleware } from './lib/middlewares/error-middleware';
 export { default as loggerMiddleware } from './lib/middlewares/logger-middleware';
