@@ -1,7 +1,12 @@
 import { generateId } from '@fake.sh/backend-common';
 import { getDb } from '@lib/database';
 import { and, eq } from 'drizzle-orm';
-import type { CreateBody, IndexQuery, UpdateBody } from './schemas-dto';
+import type {
+  CreateBody,
+  IndexQuery,
+  ShowQuery,
+  UpdateBody,
+} from './schemas-dto';
 import { schemasTable } from './schemas-schema';
 
 export default class SchemasService {
@@ -12,17 +17,23 @@ export default class SchemasService {
       where: eq(schemasTable.project_id, projectId),
       limit: query.limit || 10,
       offset: query.page ? (query.page - 1) * (query.limit || 10) : 0,
+      with: {
+        project: query.with_project || undefined,
+      },
     });
 
     return records;
   }
 
-  public async show(projectId: string, schemaId: string) {
+  public async show(projectId: string, schemaId: string, query: ShowQuery) {
     const records = await this.db.query.schemas.findMany({
       where: and(
         eq(schemasTable.project_id, projectId),
         eq(schemasTable.id, schemaId)
       ),
+      with: {
+        project: query.with_project || undefined,
+      },
     });
 
     if (records.length === 0) {

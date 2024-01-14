@@ -1,6 +1,6 @@
 import type { Handler } from '@fake.sh/backend-common';
 import { BaseError, CrudController } from '@fake.sh/backend-common';
-import { CreateBody, IndexQuery, UpdateBody } from './schemas-dto';
+import { CreateBody, IndexQuery, ShowQuery, UpdateBody } from './schemas-dto';
 import SchemasService from './schemas-service';
 
 type ApiPath<SchemaId extends boolean = false> = SchemaId extends true
@@ -23,9 +23,11 @@ export default class SchemasController extends CrudController {
   };
 
   public show: Handler<ApiPath<true>> = async (ctx) => {
+    const q = this.validateQuery(ctx, ShowQuery);
     const record = await this.service.show(
       ctx.req.param('projectId'),
-      ctx.req.param('schemaId')
+      ctx.req.param('schemaId'),
+      q
     );
     if (!record) {
       return this.notFound(ctx, {
@@ -62,7 +64,8 @@ export default class SchemasController extends CrudController {
 
     const record = await this.service.show(
       ctx.req.param('projectId'),
-      ctx.req.param('schemaId')
+      ctx.req.param('schemaId'),
+      {}
     );
     if (!record) {
       return this.notFound(ctx, {
@@ -104,7 +107,8 @@ export default class SchemasController extends CrudController {
   public destroy: Handler<ApiPath<true>> = async (ctx) => {
     const record = await this.service.show(
       ctx.req.param('projectId'),
-      ctx.req.param('schemaId')
+      ctx.req.param('schemaId'),
+      {}
     );
     if (!record) {
       return this.notFound(ctx, {
