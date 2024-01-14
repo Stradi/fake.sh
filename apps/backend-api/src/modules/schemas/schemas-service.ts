@@ -1,7 +1,7 @@
 import { generateId } from '@fake.sh/backend-common';
 import { getDb } from '@lib/database';
 import { and, eq } from 'drizzle-orm';
-import type { CreateBody, IndexQuery } from './schemas-dto';
+import type { CreateBody, IndexQuery, UpdateBody } from './schemas-dto';
 import { schemasTable } from './schemas-schema';
 
 export default class SchemasService {
@@ -44,6 +44,28 @@ export default class SchemasService {
       .returning();
 
     return record[0];
+  }
+
+  public async update(projectId: string, schemaId: string, data: UpdateBody) {
+    const records = await this.db
+      .update(schemasTable)
+      .set({
+        version: data.version,
+        data: data.data,
+      })
+      .where(
+        and(
+          eq(schemasTable.project_id, projectId),
+          eq(schemasTable.id, schemaId)
+        )
+      )
+      .returning();
+
+    if (records.length === 0) {
+      return null;
+    }
+
+    return records[0];
   }
 
   public async destroy(projectId: string, schemaId: string) {

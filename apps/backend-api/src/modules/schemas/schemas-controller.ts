@@ -1,6 +1,6 @@
 import type { Handler } from '@fake.sh/backend-common';
 import { BaseError, CrudController } from '@fake.sh/backend-common';
-import { CreateBody, IndexQuery } from './schemas-dto';
+import { CreateBody, IndexQuery, UpdateBody } from './schemas-dto';
 import SchemasService from './schemas-service';
 
 type ApiPath<SchemaId extends boolean = false> = SchemaId extends true
@@ -54,6 +54,50 @@ export default class SchemasController extends CrudController {
         'projectId'
       )}`,
       payload: record,
+    });
+  };
+
+  protected update: Handler<ApiPath<true>> = async (ctx) => {
+    const body = await this.validateBody(ctx, UpdateBody);
+
+    const record = await this.service.show(
+      ctx.req.param('projectId'),
+      ctx.req.param('schemaId')
+    );
+    if (!record) {
+      return this.notFound(ctx, {
+        code: 'SCHEMA_NOT_FOUND',
+        message: `Schema with id ${ctx.req.param(
+          'schemaId'
+        )} not found for project with id ${ctx.req.param('schemaId')}`,
+        action: 'Please check the id and try again',
+      });
+    }
+
+    const updatedRecord = await this.service.update(
+      ctx.req.param('projectId'),
+      ctx.req.param('schemaId'),
+      body
+    );
+    if (!updatedRecord) {
+      throw new BaseError({
+        code: 'SCHEMA_UPDATE_FAILED',
+        message: `Failed to update schema with id ${ctx.req.param(
+          'schemaId'
+        )} for project with id ${ctx.req.param('schemaId')}`,
+        action: 'Please try again later',
+        additionalData: {
+          record,
+          body,
+        },
+      });
+    }
+
+    return this.ok(ctx, {
+      message: `Updated schema with id ${ctx.req.param(
+        'schemaId'
+      )} for project with id ${ctx.req.param('schemaId')}`,
+      payload: updatedRecord,
     });
   };
 

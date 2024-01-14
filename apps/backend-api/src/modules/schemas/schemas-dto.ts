@@ -14,3 +14,9 @@ export const CreateBody = z.object({
   data: z.string(),
 });
 export type CreateBody = z.infer<typeof CreateBody>;
+
+export const UpdateBody = z.object({
+  version: z.coerce.number().positive(),
+  data: z.string(),
+});
+export type UpdateBody = z.infer<typeof UpdateBody>;
