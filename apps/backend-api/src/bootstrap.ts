@@ -6,6 +6,10 @@ import {
   notFoundMiddleware,
 } from '@fake.sh/backend-common';
 import authMiddleware from '@lib/middlewares/auth-middleware';
+import { AccountsController } from '@modules/accounts/accounts-controller';
+import AuthController from '@modules/auth/auth-controller';
+import GroupsController from '@modules/groups/groups-controller';
+import PermissionsController from '@modules/permissions/permissions-controller';
 import ProjectsController from '@modules/projects/projects-controller';
 import SchemasController from '@modules/schemas/schemas-controller';
 import { Hono } from 'hono';
@@ -31,20 +35,13 @@ export function getServer() {
   app.onError(errorMiddleware());
   app.notFound(notFoundMiddleware());
 
-  app.route(
-    '/api/v1',
-    new ProjectsController({
-      resourceName: 'projects',
-    }).router()
-  );
-
-  app.route(
-    '/api/v1/projects/:projectId',
-    new SchemasController({
-      resourceName: 'schemas',
-      handlerParamName: 'schemaId',
-    }).router()
-  );
+  // NOTE: Save without formatting pls.
+  app.route('/api/v1', new ProjectsController({ resourceName: 'projects' }).router());
+  app.route('/api/v1/projects/:projectId', new SchemasController({ resourceName: 'schemas', handlerParamName: 'schemaId'}).router());
+  app.route('/api/v1', new AccountsController({ resourceName: 'accounts' }).router());
+  app.route('/api/v1', new AuthController().router());
+  app.route('/api/v1', new GroupsController({ resourceName: 'groups' }).router());
+  app.route('/api/v1', new PermissionsController({ resourceName: 'permissions' }).router());
 
   return app;
 }
