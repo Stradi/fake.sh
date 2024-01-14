@@ -1,0 +1,14 @@
+{
+  "extends": "@fake.sh/tsconfig/bun.json",
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist", "node_modules"],
+  "compilerOptions": {
+    "typeRoots": ["./node_modules/@fake.sh/tsconfig/node_modules"],
+    "baseUrl": "./src",
+    "paths": {
+      "@lib/*": ["lib/*"],
+      "@utils/*": ["utils/*"],
+      "@modules/*": ["modules/*"]
+    }
+  }
+}
