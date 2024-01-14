@@ -1,4 +1,12 @@
 import { log } from '@fake.sh/backend-common';
+import {
+  projectsRelations,
+  projectsTable,
+} from '@modules/projects/projects-schema';
+import {
+  schemasRelations,
+  schemasTable,
+} from '@modules/schemas/schemas-schema';
 import Database from 'bun:sqlite';
 import { drizzle } from 'drizzle-orm/bun-sqlite';
 import { migrate } from 'drizzle-orm/bun-sqlite/migrator';
@@ -10,7 +18,12 @@ export function getDb() {
   });
 
   return drizzle(file, {
-    schema: {},
+    schema: {
+      projects: projectsTable,
+      projectsRelations,
+      schemas: schemasTable,
+      schemasRelations,
+    },
   });
 }
 

@@ -5,6 +5,7 @@ import {
   loggerMiddleware,
   notFoundMiddleware,
 } from '@fake.sh/backend-common';
+import ProjectsController from '@modules/projects/projects-controller';
 import { Hono } from 'hono';
 
 let requestsServed = 0;
@@ -26,6 +27,8 @@ export function getServer() {
 
   app.onError(errorMiddleware());
   app.notFound(notFoundMiddleware());
+
+  app.route('/api/v1', new ProjectsController('projects').router());
 
   return app;
 }

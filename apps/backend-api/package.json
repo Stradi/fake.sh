@@ -23,6 +23,7 @@
   "dependencies": {
     "@fake.sh/backend-common": "workspace:^",
     "drizzle-orm": "^0.29.3",
-    "hono": "^3.12.3"
+    "hono": "^3.12.3",
+    "zod": "^3.22.4"
   }
 }
