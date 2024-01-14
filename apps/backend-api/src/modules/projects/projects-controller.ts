@@ -1,5 +1,5 @@
 import type { Handler } from '@fake.sh/backend-common';
-import { CrudController } from '@fake.sh/backend-common';
+import { BaseError, CrudController } from '@fake.sh/backend-common';
 import { CreateBody, IndexQuery, UpdateBody } from './projects-dto';
 import ProjectsService from './projects-service';
 
@@ -45,7 +45,28 @@ export default class ProjectsController extends CrudController {
 
   protected update: Handler<'/:id'> = async (ctx) => {
     const body = await this.validateBody(ctx, UpdateBody);
-    const record = await this.service.update(ctx.req.param('id'), body);
+
+    const record = await this.service.show(ctx.req.param('id'));
+    if (!record) {
+      return this.notFound(ctx, {
+        code: 'PROJECT_NOT_FOUND',
+        message: `Record with id ${ctx.req.param('id')} not found`,
+        action: 'Please check the id and try again',
+      });
+    }
+
+    const updatedRecord = await this.service.update(ctx.req.param('id'), body);
+    if (!updatedRecord) {
+      throw new BaseError({
+        code: 'PROJECT_UPDATE_FAILED',
+        message: `Failed to update record with id ${ctx.req.param('id')}`,
+        action: 'Please try again later',
+        additionalData: {
+          record,
+          body,
+        },
+      });
+    }
 
     return this.ok(ctx, {
       message: `Updated record with id ${record.id}`,
@@ -54,7 +75,26 @@ export default class ProjectsController extends CrudController {
   };
 
   protected destroy: Handler<'/:id'> = async (ctx) => {
-    const record = await this.service.destroy(ctx.req.param('id'));
+    const record = await this.service.show(ctx.req.param('id'));
+    if (!record) {
+      return this.notFound(ctx, {
+        code: 'PROJECT_NOT_FOUND',
+        message: `Record with id ${ctx.req.param('id')} not found`,
+        action: 'Please check the id and try again',
+      });
+    }
+
+    const deletedRecord = await this.service.destroy(ctx.req.param('id'));
+    if (!deletedRecord) {
+      throw new BaseError({
+        code: 'PROJECT_DELETE_FAILED',
+        message: `Failed to delete record with id ${ctx.req.param('id')}`,
+        action: 'Please try again later',
+        additionalData: {
+          record,
+        },
+      });
+    }
 
     return this.ok(ctx, {
       message: `Deleted record with id ${record.id}`,

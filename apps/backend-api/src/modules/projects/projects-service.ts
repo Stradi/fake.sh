@@ -17,11 +17,15 @@ export default class ProjectsService {
   }
 
   public async show(id: string) {
-    const record = await this.db.query.projects.findMany({
+    const records = await this.db.query.projects.findMany({
       where: eq(projectsTable.id, id),
     });
 
-    return record[0];
+    if (records.length === 0) {
+      return null;
+    }
+
+    return records[0];
   }
 
   public async create(body: CreateBody) {
@@ -45,7 +49,7 @@ export default class ProjectsService {
       slug = slugify(body.name);
     }
 
-    const record = await this.db
+    const records = await this.db
       .update(projectsTable)
       .set({
         name: body.name,
@@ -55,15 +59,23 @@ export default class ProjectsService {
       .where(eq(projectsTable.id, id))
       .returning();
 
-    return record[0];
+    if (records.length === 0) {
+      return null;
+    }
+
+    return records[0];
   }
 
   public async destroy(id: string) {
-    const record = await this.db
+    const records = await this.db
       .delete(projectsTable)
       .where(eq(projectsTable.id, id))
       .returning();
 
-    return record[0];
+    if (records.length === 0) {
+      return null;
+    }
+
+    return records[0];
   }
 }
