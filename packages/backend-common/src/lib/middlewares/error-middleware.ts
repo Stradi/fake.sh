@@ -1,5 +1,7 @@
-import { BaseError, log, resp } from '@fake.sh/backend-common';
 import type { ErrorHandler } from 'hono';
+import BaseError from '../../utils/errors/base-error';
+import { log } from '../../utils/logger';
+import { resp } from '../../utils/response';
 
 export default function errorMiddleware(): ErrorHandler {
   return (error, ctx) => {

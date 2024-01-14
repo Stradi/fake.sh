@@ -1,8 +1,10 @@
-import { log } from '@fake.sh/backend-common';
-import beNiceMiddleware from '@lib/middlewares/be-nice-middleware';
-import errorMiddleware from '@lib/middlewares/error-middleware';
-import loggerMiddleware from '@lib/middlewares/logger-middleware';
-import notFoundMiddleware from '@lib/middlewares/not-found-middleware';
+import {
+  beNiceMiddleware,
+  errorMiddleware,
+  log,
+  loggerMiddleware,
+  notFoundMiddleware,
+} from '@fake.sh/backend-common';
 import TenantController from '@modules/tenant/tenant-controller';
 import { Hono } from 'hono';
 

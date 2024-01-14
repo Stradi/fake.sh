@@ -1,5 +1,5 @@
-import { resp } from '@fake.sh/backend-common';
 import type { NotFoundHandler } from 'hono';
+import { resp } from '../../utils/response';
 
 export default function notFoundMiddleware(): NotFoundHandler {
   return (ctx) => {

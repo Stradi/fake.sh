@@ -1,5 +1,5 @@
-import { log } from '@fake.sh/backend-common';
 import type { MiddlewareHandler } from 'hono';
+import { log } from '../../utils/logger';
 
 export default function loggerMiddleware(): MiddlewareHandler {
   return async (ctx, next) => {
