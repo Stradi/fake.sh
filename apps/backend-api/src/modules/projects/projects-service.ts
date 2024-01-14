@@ -1,7 +1,12 @@
 import { generateId, slugify } from '@fake.sh/backend-common';
 import { getDb } from '@lib/database';
 import { eq } from 'drizzle-orm';
-import type { CreateBody, IndexQuery, UpdateBody } from './projects-dto';
+import type {
+  CreateBody,
+  IndexQuery,
+  ShowQuery,
+  UpdateBody,
+} from './projects-dto';
 import { projectsTable } from './projects-schema';
 
 export default class ProjectsService {
@@ -11,14 +16,20 @@ export default class ProjectsService {
     const records = await this.db.query.projects.findMany({
       limit: query.limit || 10,
       offset: query.page ? (query.page - 1) * (query.limit || 10) : 0,
+      with: {
+        schemas: query.with_schemas || undefined,
+      },
     });
 
     return records;
   }
 
-  public async show(id: string) {
+  public async show(id: string, query: ShowQuery) {
     const records = await this.db.query.projects.findMany({
       where: eq(projectsTable.id, id),
+      with: {
+        schemas: query.with_schemas || undefined,
+      },
     });
 
     if (records.length === 0) {

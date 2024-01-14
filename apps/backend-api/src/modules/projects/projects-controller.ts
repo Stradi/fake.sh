@@ -1,6 +1,6 @@
 import type { Handler } from '@fake.sh/backend-common';
 import { BaseError, CrudController } from '@fake.sh/backend-common';
-import { CreateBody, IndexQuery, UpdateBody } from './projects-dto';
+import { CreateBody, IndexQuery, ShowQuery, UpdateBody } from './projects-dto';
 import ProjectsService from './projects-service';
 
 type ApiPath<ProjectId extends boolean = false> = ProjectId extends true
@@ -21,7 +21,8 @@ export default class ProjectsController extends CrudController {
   };
 
   protected show: Handler<ApiPath<true>> = async (ctx) => {
-    const record = await this.service.show(ctx.req.param('id'));
+    const q = this.validateQuery(ctx, ShowQuery);
+    const record = await this.service.show(ctx.req.param('id'), q);
     if (!record) {
       return this.notFound(ctx, {
         code: 'PROJECT_NOT_FOUND',
@@ -49,7 +50,7 @@ export default class ProjectsController extends CrudController {
   protected update: Handler<ApiPath<true>> = async (ctx) => {
     const body = await this.validateBody(ctx, UpdateBody);
 
-    const record = await this.service.show(ctx.req.param('id'));
+    const record = await this.service.show(ctx.req.param('id'), {});
     if (!record) {
       return this.notFound(ctx, {
         code: 'PROJECT_NOT_FOUND',
@@ -78,7 +79,7 @@ export default class ProjectsController extends CrudController {
   };
 
   protected destroy: Handler<ApiPath<true>> = async (ctx) => {
-    const record = await this.service.show(ctx.req.param('id'));
+    const record = await this.service.show(ctx.req.param('id'), {});
     if (!record) {
       return this.notFound(ctx, {
         code: 'PROJECT_NOT_FOUND',
