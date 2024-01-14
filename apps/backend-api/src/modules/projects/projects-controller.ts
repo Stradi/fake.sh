@@ -3,11 +3,15 @@ import { BaseError, CrudController } from '@fake.sh/backend-common';
 import { CreateBody, IndexQuery, UpdateBody } from './projects-dto';
 import ProjectsService from './projects-service';
 
+type ApiPath<ProjectId extends boolean = false> = ProjectId extends true
+  ? '/api/v1/projects/:id'
+  : '/api/v1/projects';
+
 // TODO: Check errors and null results from service methods and return appropriate responses
 export default class ProjectsController extends CrudController {
   private readonly service = new ProjectsService();
 
-  protected index: Handler = async (ctx) => {
+  protected index: Handler<ApiPath> = async (ctx) => {
     const q = this.validateQuery(ctx, IndexQuery);
     const records = await this.service.index(q);
 
@@ -17,7 +21,7 @@ export default class ProjectsController extends CrudController {
     });
   };
 
-  protected show: Handler<'/:id'> = async (ctx) => {
+  protected show: Handler<ApiPath<true>> = async (ctx) => {
     const record = await this.service.show(ctx.req.param('id'));
     if (!record) {
       return this.notFound(ctx, {
@@ -33,7 +37,7 @@ export default class ProjectsController extends CrudController {
     });
   };
 
-  protected create: Handler = async (ctx) => {
+  protected create: Handler<ApiPath> = async (ctx) => {
     const body = await this.validateBody(ctx, CreateBody);
     const record = await this.service.create(body);
 
@@ -43,7 +47,7 @@ export default class ProjectsController extends CrudController {
     });
   };
 
-  protected update: Handler<'/:id'> = async (ctx) => {
+  protected update: Handler<ApiPath<true>> = async (ctx) => {
     const body = await this.validateBody(ctx, UpdateBody);
 
     const record = await this.service.show(ctx.req.param('id'));
@@ -74,7 +78,7 @@ export default class ProjectsController extends CrudController {
     });
   };
 
-  protected destroy: Handler<'/:id'> = async (ctx) => {
+  protected destroy: Handler<ApiPath<true>> = async (ctx) => {
     const record = await this.service.show(ctx.req.param('id'));
     if (!record) {
       return this.notFound(ctx, {
