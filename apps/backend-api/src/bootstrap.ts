@@ -6,6 +6,7 @@ import {
   notFoundMiddleware,
 } from '@fake.sh/backend-common';
 import ProjectsController from '@modules/projects/projects-controller';
+import SchemasController from '@modules/schemas/schemas-controller';
 import { Hono } from 'hono';
 
 let requestsServed = 0;
@@ -32,6 +33,14 @@ export function getServer() {
     '/api/v1',
     new ProjectsController({
       resourceName: 'projects',
+    }).router()
+  );
+
+  app.route(
+    '/api/v1/projects/:projectId',
+    new SchemasController({
+      resourceName: 'schemas',
+      handlerParamName: 'schemaId',
     }).router()
   );
 
