@@ -1,8 +1,9 @@
 import { accountGroupTable } from '@modules/shared/account-group-schema';
+import { groupPermissionTable } from '@modules/shared/group-permission-schema';
 import { relations, sql } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
-export const accountsTable = sqliteTable('accounts', {
+export const groupsTable = sqliteTable('groups', {
   id: text('id', { mode: 'text' }).primaryKey().notNull(),
   created_at: integer('created_at', { mode: 'timestamp_ms' })
     .notNull()
@@ -11,10 +12,10 @@ export const accountsTable = sqliteTable('accounts', {
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
 
-  email: text('email', { mode: 'text' }).notNull().unique(),
-  password_hash: text('password_hash', { mode: 'text' }).notNull(),
+  name: text('name', { mode: 'text' }).notNull().unique(),
 });
 
-export const accountsRelations = relations(accountsTable, ({ many }) => ({
+export const groupsRelations = relations(groupsTable, ({ many }) => ({
   accountGroup: many(accountGroupTable),
+  groupPermission: many(groupPermissionTable),
 }));
