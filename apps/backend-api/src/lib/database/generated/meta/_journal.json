@@ -15,6 +15,13 @@
       "when": 1705248732142,
       "tag": "0001_moaning_goliath",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1705256088465,
+      "tag": "0002_handy_northstar",
+      "breakpoints": true
     }
   ]
 }
