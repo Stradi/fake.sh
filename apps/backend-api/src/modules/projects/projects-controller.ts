@@ -7,7 +7,6 @@ type ApiPath<ProjectId extends boolean = false> = ProjectId extends true
   ? '/api/v1/projects/:id'
   : '/api/v1/projects';
 
-// TODO: Check errors and null results from service methods and return appropriate responses
 export default class ProjectsController extends CrudController {
   private readonly service = new ProjectsService();
 
