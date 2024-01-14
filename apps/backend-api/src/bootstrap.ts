@@ -28,7 +28,12 @@ export function getServer() {
   app.onError(errorMiddleware());
   app.notFound(notFoundMiddleware());
 
-  app.route('/api/v1', new ProjectsController('projects').router());
+  app.route(
+    '/api/v1',
+    new ProjectsController({
+      resourceName: 'projects',
+    }).router()
+  );
 
   return app;
 }
