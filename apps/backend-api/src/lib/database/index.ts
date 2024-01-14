@@ -13,7 +13,7 @@ import { migrate } from 'drizzle-orm/bun-sqlite/migrator';
 import fs from 'node:fs/promises';
 
 export function getDb() {
-  const file = new Database('./data/main.sqlite', {
+  const file = new Database(`${process.cwd()}/data/main.sqlite`, {
     create: true,
   });
 
@@ -30,7 +30,7 @@ export function getDb() {
 export async function runMigrations() {
   await fs.mkdir('./data', { recursive: true });
   migrate(getDb(), {
-    migrationsFolder: './src/lib/database/generated',
+    migrationsFolder: `${import.meta.dir}/generated`,
   });
 
   log.info('All migrations ran successfully');

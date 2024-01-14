@@ -18,7 +18,7 @@ FROM base as build
 WORKDIR /build
 
 COPY . .
-RUN pnpm --filter @fake.sh/tenant-api install --frozen-lockfile
+RUN pnpm --filter @fake.sh/backend-api install --frozen-lockfile
 
 # Prune all the unnecessary files from node_modules
 RUN curl -sf https://gobinaries.com/tj/node-prune | sh
@@ -31,12 +31,12 @@ FROM base as dist
 USER node
 
 ENV NODE_ENV="production"
-ENV PORT=3000
+ENV PORT=3001
 WORKDIR /app
 
 COPY --from=build --chown=node:node /build/node_modules ./node_modules
-COPY --from=build --chown=node:node /build/apps/tenant-api ./apps/tenant-api
+COPY --from=build --chown=node:node /build/apps/backend-api ./apps/backend-api
 COPY --from=build --chown=node:node /build/packages/backend-common ./packages/backend-common
 
-ENTRYPOINT ["bun", "run", "./apps/tenant-api/src/index.ts"]
-EXPOSE 3000
+ENTRYPOINT ["bun", "run", "./apps/backend-api/src/index.ts"]
+EXPOSE 3001

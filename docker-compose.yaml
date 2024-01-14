@@ -8,6 +8,15 @@ services:
       - 3000:3000
     networks:
       - shared
+  backend-api:
+    build:
+      context: .
+      dockerfile: ./apps/backend-api/Dockerfile
+    restart: always
+    ports:
+      - 3001:3001
+    networks:
+      - shared
 
 networks:
   shared:
