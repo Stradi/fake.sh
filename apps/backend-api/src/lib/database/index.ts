@@ -1,5 +1,13 @@
 import { log } from '@fake.sh/backend-common';
-import { accountsTable } from '@modules/accounts/accounts-schema';
+import {
+  accountsRelations,
+  accountsTable,
+} from '@modules/accounts/accounts-schema';
+import { groupsRelations, groupsTable } from '@modules/groups/groups-schema';
+import {
+  permissionsRelations,
+  permissionsTable,
+} from '@modules/permissions/permissions-schema';
 import {
   projectsRelations,
   projectsTable,
@@ -8,6 +16,14 @@ import {
   schemasRelations,
   schemasTable,
 } from '@modules/schemas/schemas-schema';
+import {
+  accountGroupRelations,
+  accountGroupTable,
+} from '@modules/shared/account-group-schema';
+import {
+  groupPermissionRelations,
+  groupPermissionTable,
+} from '@modules/shared/group-permission-schema';
 import Database from 'bun:sqlite';
 import { drizzle } from 'drizzle-orm/bun-sqlite';
 import { migrate } from 'drizzle-orm/bun-sqlite/migrator';
@@ -22,9 +38,24 @@ export function getDb() {
     schema: {
       projects: projectsTable,
       projectsRelations,
+
       schemas: schemasTable,
       schemasRelations,
+
       accounts: accountsTable,
+      accountsRelations,
+
+      permissions: permissionsTable,
+      permissionsRelations,
+
+      groups: groupsTable,
+      groupsRelations,
+
+      accountGroup: accountGroupTable,
+      accountGroupRelations,
+
+      groupPermission: groupPermissionTable,
+      groupPermissionRelations,
     },
   });
 }
