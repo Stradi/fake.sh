@@ -1,6 +1,6 @@
 {
-  "name": "@fake.sh/tenant-api",
-  "description": "Tenant Backend API for Fake.sh",
+  "name": "@fake.sh/backend-common",
+  "description": "Common helpers and useful classes for backend applications",
   "version": "0.0.0",
   "private": true,
   "author": "Batin Evirgen <hi@batin.sh> (https://www.batin.sh)",
@@ -8,18 +8,18 @@
   "repository": {
     "type": "git",
     "url": "https://www.github.com/Stradi/fake.sh.git",
-    "directory": "apps/tenant-api"
+    "directory": "packages/backend-common"
   },
-  "scripts": {
-    "dev": "bun --hot ./src/index.ts"
-  },
+  "exports": "./src/index.ts",
   "devDependencies": {
     "@fake.sh/tsconfig": "workspace:^",
     "eslint": "^8.56.0",
-    "eslint-config-fakesh": "workspace:^"
+    "eslint-config-fakesh": "workspace:^",
+    "pino-pretty": "^10.3.1"
   },
   "dependencies": {
-    "@fake.sh/backend-common": "workspace:^",
-    "hono": "^3.12.3"
+    "hono": "^3.12.3",
+    "pino": "^8.17.2",
+    "zod": "^3.22.4"
   }
 }

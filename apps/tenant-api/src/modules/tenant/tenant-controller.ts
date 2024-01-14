@@ -1,6 +1,5 @@
-import type { Handler } from '@modules/base/base-controller';
-import BaseController from '@modules/base/base-controller';
-import BaseError from '@utils/errors/base-error';
+import type { Handler } from '@fake.sh/backend-common';
+import { BaseController, BaseError } from '@fake.sh/backend-common';
 import type { Context } from 'hono';
 import type { RequestInfo } from './helpers';
 import { extractRequestInfo } from './helpers';

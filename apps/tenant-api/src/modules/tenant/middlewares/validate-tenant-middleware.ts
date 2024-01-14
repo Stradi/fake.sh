@@ -1,4 +1,4 @@
-import BaseError from '@utils/errors/base-error';
+import { BaseError } from '@fake.sh/backend-common';
 import { type MiddlewareHandler } from 'hono';
 
 export default function extractTenantMiddleware(): MiddlewareHandler {

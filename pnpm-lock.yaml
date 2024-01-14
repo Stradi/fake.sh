@@ -23,6 +23,25 @@ importers:
 
   apps/tenant-api:
     dependencies:
+      '@fake.sh/backend-common':
+        specifier: workspace:^
+        version: link:../../packages/backend-common
+      hono:
+        specifier: ^3.12.3
+        version: 3.12.3
+    devDependencies:
+      '@fake.sh/tsconfig':
+        specifier: workspace:^
+        version: link:../../packages/tsconfig
+      eslint:
+        specifier: ^8.56.0
+        version: 8.56.0
+      eslint-config-fakesh:
+        specifier: workspace:^
+        version: link:../../packages/eslint-config-fakesh
+
+  packages/backend-common:
+    dependencies:
       hono:
         specifier: ^3.12.3
         version: 3.12.3
@@ -35,13 +54,13 @@ importers:
     devDependencies:
       '@fake.sh/tsconfig':
         specifier: workspace:^
-        version: link:../../packages/tsconfig
+        version: link:../tsconfig
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
       eslint-config-fakesh:
         specifier: workspace:^
-        version: link:../../packages/eslint-config-fakesh
+        version: link:../eslint-config-fakesh
       pino-pretty:
         specifier: ^10.3.1
         version: 10.3.1

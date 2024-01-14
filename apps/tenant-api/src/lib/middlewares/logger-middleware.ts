@@ -1,4 +1,4 @@
-import { log } from '@utils/logger';
+import { log } from '@fake.sh/backend-common';
 import type { MiddlewareHandler } from 'hono';
 
 export default function loggerMiddleware(): MiddlewareHandler {

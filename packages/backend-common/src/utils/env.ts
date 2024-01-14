@@ -1,4 +1,4 @@
-import { log } from '@utils/logger';
+import { log } from './logger';
 
 // TODO: We should use keyof NodeJS.ProcessEnv for `name` but doesn't work :(
 export function env(name: string, defaultValue?: string): string;

@@ -1,5 +1,4 @@
-import { env } from '@utils/env';
-import { log } from '@utils/logger';
+import { env, log } from '@fake.sh/backend-common';
 import { addShutdownEventListeners, getServer } from 'bootstrap';
 
 addShutdownEventListeners();

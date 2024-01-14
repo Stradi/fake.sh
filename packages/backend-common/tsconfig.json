@@ -1,0 +1,9 @@
+{
+  "extends": "@fake.sh/tsconfig/bun.json",
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist", "node_modules"],
+  "compilerOptions": {
+    "composite": true,
+    "typeRoots": ["./node_modules/@fake.sh/tsconfig/node_modules"]
+  }
+}
