@@ -8,9 +8,9 @@ export default class GroupsPolicy extends BasePolicy {
   }
 
   public show(group: typeof groupsTable.$inferSelect, accountData?: JwtClaims) {
-    return (
-      this.can(`Group.${group.id}.Show`, accountData) ||
-      this.can('Group.*.Show', accountData)
+    return this.canMultiple(
+      [`Group.${group.id}.Show`, 'Group.*.Show'],
+      accountData
     );
   }
 
@@ -22,9 +22,9 @@ export default class GroupsPolicy extends BasePolicy {
     group: typeof groupsTable.$inferSelect,
     accountData?: JwtClaims
   ) {
-    return (
-      this.can(`Group.${group.id}.Update`, accountData) ||
-      this.can('Group.*.Update', accountData)
+    return this.canMultiple(
+      [`Group.${group.id}.Update`, 'Group.*.Update'],
+      accountData
     );
   }
 
@@ -32,9 +32,9 @@ export default class GroupsPolicy extends BasePolicy {
     group: typeof groupsTable.$inferSelect,
     accountData?: JwtClaims
   ) {
-    return (
-      this.can(`Group.${group.id}.Destroy`, accountData) ||
-      this.can('Group.*.Destroy', accountData)
+    return this.canMultiple(
+      [`Group.${group.id}.Destroy`, 'Group.*.Destroy'],
+      accountData
     );
   }
 }

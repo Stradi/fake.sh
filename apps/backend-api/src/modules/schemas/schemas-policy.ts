@@ -11,10 +11,9 @@ export default class SchemasPolicy extends BasePolicy {
     schema: typeof schemasTable.$inferSelect,
     accountData?: JwtClaims
   ) {
-    return (
-      this.can(`Schema.${schema.id}.Show`, accountData) ||
-      // this.can("Schema.&.Show", accountData, schema, "created_by") ||
-      this.can('Schema.*.Show', accountData)
+    return this.canMultiple(
+      [`Schema.${schema.id}.Show`, 'Schema.*.Show'],
+      accountData
     );
   }
 
@@ -26,10 +25,9 @@ export default class SchemasPolicy extends BasePolicy {
     schema: typeof schemasTable.$inferSelect,
     accountData?: JwtClaims
   ) {
-    return (
-      this.can(`Schema.${schema.id}.Update`, accountData) ||
-      // this.can("Schema.&.Update", accountData, schema, "created_by") ||
-      this.can('Schema.*.Update', accountData)
+    return this.canMultiple(
+      [`Schema.${schema.id}.Update`, 'Schema.*.Update'],
+      accountData
     );
   }
 
@@ -37,10 +35,9 @@ export default class SchemasPolicy extends BasePolicy {
     schema: typeof schemasTable.$inferSelect,
     accountData?: JwtClaims
   ) {
-    return (
-      this.can(`Schema.${schema.id}.Destroy`, accountData) ||
-      // this.can("Schema.&.Destroy", accountData, schema, "created_by") ||
-      this.can('Schema.*.Destroy', accountData)
+    return this.canMultiple(
+      [`Schema.${schema.id}.Destroy`, 'Schema.*.Destroy'],
+      accountData
     );
   }
 }

@@ -11,9 +11,9 @@ export default class AccountsPolicy extends BasePolicy {
     account: typeof accountsTable.$inferSelect,
     accountData?: JwtClaims
   ) {
-    return (
-      this.can(`Account.${account.id}.Show`, accountData) ||
-      this.can('Account.*.Show', accountData)
+    return this.canMultiple(
+      [`Account.${account.id}.Show`, 'Account.*.Show'],
+      accountData
     );
   }
 
@@ -21,10 +21,9 @@ export default class AccountsPolicy extends BasePolicy {
     account: typeof accountsTable.$inferSelect,
     accountData?: JwtClaims
   ) {
-    return (
-      this.can(`Account.${account.id}.Update`, accountData) ||
-      this.can('Account.&.Update', accountData) ||
-      this.can('Account.*.Update', accountData)
+    return this.canMultiple(
+      [`Account.${account.id}.Update`, 'Account.&.Update', 'Account.*.Update'],
+      accountData
     );
   }
 
@@ -32,10 +31,13 @@ export default class AccountsPolicy extends BasePolicy {
     account: typeof accountsTable.$inferSelect,
     accountData?: JwtClaims
   ) {
-    return (
-      this.can(`Account.${account.id}.Destroy`, accountData) ||
-      this.can('Account.&.Destroy', accountData) ||
-      this.can('Account.*.Destroy', accountData)
+    return this.canMultiple(
+      [
+        `Account.${account.id}.Destroy`,
+        'Account.&.Destroy',
+        'Account.*.Destroy',
+      ],
+      accountData
     );
   }
 }

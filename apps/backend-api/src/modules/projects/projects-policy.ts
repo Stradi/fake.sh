@@ -12,10 +12,11 @@ export default class ProjectsPolicy extends BasePolicy {
     project: typeof projectsTable.$inferSelect,
     accountData?: JwtClaims
   ) {
-    return (
-      this.can(`Project.${project.id}.Show`, accountData) ||
-      // this.can('Project.&.Show', accountData, project, 'created_by') ||
-      this.can('Project.*.Show', accountData)
+    // TODO: After we add "created_by" to the Project table, we can use this:
+    // this.canMultiple([`Project.${project.id}.Show`, "Project.*.Show"], accountData, project, 'created_by');
+    return this.canMultiple(
+      [`Project.${project.id}.Show`, 'Project.*.Show'],
+      accountData
     );
   }
 
@@ -27,10 +28,9 @@ export default class ProjectsPolicy extends BasePolicy {
     project: typeof projectsTable.$inferSelect,
     accountData?: JwtClaims
   ) {
-    return (
-      this.can(`Project.${project.id}.Update`, accountData) ||
-      // this.can('Project.&.Update', accountData, project, 'created_by') ||
-      this.can('Project.*.Update', accountData)
+    return this.canMultiple(
+      [`Project.${project.id}.Update`, 'Project.*.Update'],
+      accountData
     );
   }
 
@@ -38,10 +38,9 @@ export default class ProjectsPolicy extends BasePolicy {
     project: typeof projectsTable.$inferSelect,
     accountData?: JwtClaims
   ) {
-    return (
-      this.can(`Project.${project.id}.Destroy`, accountData) ||
-      // this.can('Project.&.Destroy', accountData, project, 'created_by') ||
-      this.can('Project.*.Destroy', accountData)
+    return this.canMultiple(
+      [`Project.${project.id}.Destroy`, 'Project.*.Destroy'],
+      accountData
     );
   }
 }

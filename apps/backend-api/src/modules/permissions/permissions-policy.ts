@@ -11,9 +11,9 @@ export default class PermissionsPolicy extends BasePolicy {
     permission: typeof permissionsTable.$inferSelect,
     accountData?: JwtClaims
   ) {
-    return (
-      this.can(`Permission.${permission.id}.Show`, accountData) ||
-      this.can('Permission.*.Show', accountData)
+    return this.canMultiple(
+      [`Permission.${permission.id}.Show`, 'Permission.*.Show'],
+      accountData
     );
   }
 
@@ -25,9 +25,9 @@ export default class PermissionsPolicy extends BasePolicy {
     permission: typeof permissionsTable.$inferSelect,
     accountData?: JwtClaims
   ) {
-    return (
-      this.can(`Permission.${permission.id}.Update`, accountData) ||
-      this.can('Permission.*.Update', accountData)
+    return this.canMultiple(
+      [`Permission.${permission.id}.Update`, 'Permission.*.Update'],
+      accountData
     );
   }
 
@@ -35,9 +35,9 @@ export default class PermissionsPolicy extends BasePolicy {
     permission: typeof permissionsTable.$inferSelect,
     accountData?: JwtClaims
   ) {
-    return (
-      this.can(`Permission.${permission.id}.Destroy`, accountData) ||
-      this.can('Permission.*.Destroy', accountData)
+    return this.canMultiple(
+      [`Permission.${permission.id}.Destroy`, 'Permission.*.Destroy'],
+      accountData
     );
   }
 }

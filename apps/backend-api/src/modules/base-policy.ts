@@ -35,6 +35,25 @@ const DefaultAccountGroups: (typeof DefaultGroups)[number][] = [
 export default class BasePolicy {
   private permissionsService = new PermissionsService();
 
+  public async canMultiple<T extends AvailableResources>(
+    permissionNames: string[],
+    accountData?: JwtClaims,
+    resourceObj?: T,
+    resourceField?: keyof T
+  ) {
+    for await (const permissionName of permissionNames) {
+      const allowed = await this.can(
+        permissionName,
+        accountData,
+        resourceObj,
+        resourceField
+      );
+      if (allowed) return true;
+    }
+
+    return false;
+  }
+
   public async can<T extends AvailableResources>(
     permissionName: string,
     accountData?: JwtClaims,
