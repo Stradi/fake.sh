@@ -1,6 +1,6 @@
-import { generateId } from '@fake.sh/backend-common';
+import { BaseError, generateId } from '@fake.sh/backend-common';
 import { getDb } from '@lib/database';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import type {
   CreateBody,
   IndexQuery,
@@ -44,6 +44,22 @@ export default class SchemasService {
   }
 
   public async create(projectId: string, data: CreateBody) {
+    const existingVersion = await this.db.query.schemas.findMany({
+      where: and(
+        eq(schemasTable.project_id, projectId),
+        eq(schemasTable.version, data.version)
+      ),
+    });
+
+    if (existingVersion.length > 0) {
+      throw new BaseError({
+        code: 'VERSION_ALREADY_EXISTS',
+        message: 'This project already has a schema with this version.',
+        action: 'Use a different version number',
+        statusCode: 400,
+      });
+    }
+
     const record = await this.db
       .insert(schemasTable)
       .values({
@@ -53,6 +69,12 @@ export default class SchemasService {
         project_id: projectId,
       })
       .returning();
+
+    if (record.length === 0) {
+      return null;
+    }
+
+    await this.createSchemaTables(projectId, record[0].id, data);
 
     return record[0];
   }
@@ -94,6 +116,50 @@ export default class SchemasService {
       return null;
     }
 
+    await this.deleteSchemaTables(records[0]);
     return records[0];
+  }
+
+  private async createSchemaTables(
+    projectId: string,
+    schemaId: string,
+    body: CreateBody
+  ) {
+    const tableNamePrefix = `schema_${projectId}_${schemaId}`;
+
+    const schema = JSON.parse(body.data);
+    const resources = Object.keys(schema);
+
+    for await (const resource of resources) {
+      const tableName = `${tableNamePrefix}_${resource}`;
+      const columns = Object.keys(schema[resource]);
+
+      // TODO: Change VARCHAR(255) to the correct type. We prolly need to map the JSON Schema types to SQL types.
+      await this.db.execute(
+        sql.raw(`
+          CREATE TABLE ${tableName} (
+            ${columns.map((column) => `${column} VARCHAR(255)`).join(', ')}
+          );
+        `)
+      );
+    }
+  }
+
+  private async deleteSchemaTables(
+    deletedSchema: typeof schemasTable.$inferSelect
+  ) {
+    const tableNamePrefix = `schema_${deletedSchema.project_id}_${deletedSchema.id}`;
+
+    const schema = JSON.parse(deletedSchema.data);
+    const resources = Object.keys(schema);
+
+    for await (const resource of resources) {
+      const tableName = `${tableNamePrefix}_${resource}`;
+      await this.db.execute(
+        sql.raw(`
+          DROP TABLE ${tableName};
+        `)
+      );
+    }
   }
 }
