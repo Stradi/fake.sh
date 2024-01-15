@@ -6,7 +6,13 @@ export function env(name: string, defaultValue?: number): number;
 export function env(name: string, defaultValue?: string | number) {
   const value = process.env[name];
   if (!value) {
-    if (defaultValue) return defaultValue;
+    if (defaultValue) {
+      if (typeof defaultValue === 'string') {
+        if (defaultValue.length) return defaultValue;
+      } else {
+        return defaultValue;
+      }
+    }
 
     log.fatal(`Missing environment variable: ${name}`);
     process.exit(1);
