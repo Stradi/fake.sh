@@ -17,7 +17,10 @@ export const schemasTable = pgTable('schemas', {
 
   project_id: text('project_id')
     .notNull()
-    .references((): AnyPgColumn => projectsTable.id),
+    .references((): AnyPgColumn => projectsTable.id, {
+      onDelete: 'cascade',
+      onUpdate: 'cascade',
+    }),
 });
 
 export const schemasRelations = relations(schemasTable, ({ one }) => ({

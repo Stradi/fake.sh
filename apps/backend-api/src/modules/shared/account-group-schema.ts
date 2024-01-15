@@ -9,10 +9,14 @@ export const accountGroupTable = pgTable(
   {
     account_id: text('account_id')
       .notNull()
-      .references((): AnyPgColumn => accountsTable.id),
+      .references((): AnyPgColumn => accountsTable.id, {
+        onDelete: 'cascade',
+      }),
     group_id: text('group_id')
       .notNull()
-      .references((): AnyPgColumn => groupsTable.id),
+      .references((): AnyPgColumn => groupsTable.id, {
+        onDelete: 'cascade',
+      }),
   },
   (table) => {
     return {

@@ -9,10 +9,14 @@ export const groupPermissionTable = pgTable(
   {
     group_id: text('group_id')
       .notNull()
-      .references((): AnyPgColumn => groupsTable.id),
+      .references((): AnyPgColumn => groupsTable.id, {
+        onDelete: 'cascade',
+      }),
     permission_id: text('permission_id')
       .notNull()
-      .references((): AnyPgColumn => permissionsTable.id),
+      .references((): AnyPgColumn => permissionsTable.id, {
+        onDelete: 'cascade',
+      }),
   },
   (table) => {
     return {
