@@ -1,4 +1,5 @@
 import { BaseError } from '@fake.sh/backend-common';
+import db from '@lib/database';
 import { type MiddlewareHandler } from 'hono';
 
 export default function extractTenantMiddleware(): MiddlewareHandler {
@@ -22,11 +23,20 @@ export default function extractTenantMiddleware(): MiddlewareHandler {
       });
     }
 
-    const [tenant] = parts;
-    ctx.set('tenant', tenant);
+    const [tenantSlug] = parts;
 
-    // TODO: Check database to see if tenant exists
-    // if not, throw an error :)
+    const rows = await db`SELECT * FROM projects WHERE slug = ${tenantSlug}`;
+
+    if (rows.length === 0) {
+      throw new BaseError({
+        code: 'INVALID_TENANT',
+        message: 'Provided tenant does not found',
+        action: 'Please check your tenant slug',
+      });
+    }
+
+    const [tenant] = rows;
+    ctx.set('tenant', tenant);
 
     await next();
   };

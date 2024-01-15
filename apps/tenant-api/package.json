@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@fake.sh/backend-common": "workspace:^",
-    "hono": "^3.12.3"
+    "hono": "^3.12.3",
+    "postgres": "^3.4.3"
   }
 }

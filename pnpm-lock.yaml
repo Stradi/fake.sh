@@ -60,6 +60,9 @@ importers:
       hono:
         specifier: ^3.12.3
         version: 3.12.3
+      postgres:
+        specifier: ^3.4.3
+        version: 3.4.3
     devDependencies:
       '@fake.sh/tsconfig':
         specifier: workspace:^

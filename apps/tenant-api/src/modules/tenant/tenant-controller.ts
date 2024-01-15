@@ -24,6 +24,10 @@ export default class TenantController extends BaseController {
     const requestInfo = extractRequestInfo(ctx.req.path);
     const method = ctx.req.method;
 
+    const tenant = ctx.get('tenant' as never);
+    const schemaVersion = ctx.get('schemaVersion' as never);
+    const schema = ctx.get('schema' as never);
+
     switch (method) {
       case 'GET':
         if (requestInfo.identifier) {
