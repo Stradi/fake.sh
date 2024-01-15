@@ -1,6 +1,7 @@
 /* eslint-disable import/no-named-as-default-member -- weird, prolly a bug in Bun */
 import { BaseError, generateId, slugify } from '@fake.sh/backend-common';
 import { getDb } from '@lib/database';
+import type { JwtClaims } from '@utils/jwt';
 import { eq } from 'drizzle-orm';
 import pg from 'postgres';
 import type {
@@ -20,6 +21,7 @@ export default class ProjectsService {
       offset: query.page ? (query.page - 1) * (query.limit || 10) : 0,
       with: {
         schemas: query.with_schemas || undefined,
+        owner: query.with_owner || undefined,
       },
     });
 
@@ -31,6 +33,7 @@ export default class ProjectsService {
       where: eq(projectsTable.id, id),
       with: {
         schemas: query.with_schemas || undefined,
+        owner: query.with_owner || undefined,
       },
     });
 
@@ -48,6 +51,7 @@ export default class ProjectsService {
 
   public async create(
     body: CreateBody,
+    accountData: JwtClaims,
     addSlug = false
   ): Promise<typeof projectsTable.$inferInsert> {
     try {
@@ -57,6 +61,7 @@ export default class ProjectsService {
           id: generateId(),
           name: body.name,
           slug: slugify(body.name, addSlug ? 5 : 0),
+          created_by: accountData.id,
         })
         .returning();
 
@@ -65,7 +70,7 @@ export default class ProjectsService {
       if (error instanceof pg.PostgresError) {
         if (error.code === '23505') {
           // If we have unique constraint error, we will add id to slug and try again
-          return this.create(body, true);
+          return this.create(body, accountData, true);
         }
       }
 
@@ -81,7 +86,9 @@ export default class ProjectsService {
     let slug: string | undefined;
     if (body.name) {
       slug = slugify(body.name, addSlug ? 5 : 0);
-    } else if (body.slug) {
+    }
+
+    if (body.slug) {
       slug = slugify(body.slug, addSlug ? 5 : 0);
     }
 

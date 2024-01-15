@@ -39,7 +39,7 @@ export default class ProjectsController extends CrudController {
     await this.checkPolicy(this.policy, 'create', ctx.get('jwtPayload'));
 
     const body = await this.validateBody(ctx, CreateBody);
-    const record = await this.service.create(body);
+    const record = await this.service.create(body, ctx.get('jwtPayload'));
 
     return this.created(ctx, {
       message: `Created record with id ${record.id}`,

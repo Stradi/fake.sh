@@ -63,10 +63,12 @@ const DefaultPermissionMatrix: Record<
     'Permission.*.Destroy',
   ],
   'Registered User': [
+    'Project.Create',
     'Project.&.Show',
     'Project.&.Update',
     'Project.&.Destroy',
 
+    'Schema.Create',
     'Schema.&.Show',
 
     'Account.&.Show',
@@ -74,10 +76,12 @@ const DefaultPermissionMatrix: Record<
     'Account.&.Destroy',
   ],
   'Paid User': [
+    'Project.Create',
     'Project.&.Show',
     'Project.&.Update',
     'Project.&.Destroy',
 
+    'Schema.Create',
     'Schema.&.Show',
 
     'Account.&.Show',

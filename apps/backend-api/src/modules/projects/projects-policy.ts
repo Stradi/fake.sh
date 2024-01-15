@@ -13,10 +13,11 @@ export default class ProjectsPolicy extends BasePolicy {
     accountData?: JwtClaims
   ) {
     // TODO: After we add "created_by" to the Project table, we can use this:
-    // this.canMultiple([`Project.${project.id}.Show`, "Project.*.Show"], accountData, project, 'created_by');
     return this.canMultiple(
-      [`Project.${project.id}.Show`, 'Project.*.Show'],
-      accountData
+      [`Project.${project.id}.Show`, 'Project.&.Show', 'Project.*.Show'],
+      accountData,
+      project,
+      'created_by'
     );
   }
 
@@ -29,8 +30,10 @@ export default class ProjectsPolicy extends BasePolicy {
     accountData?: JwtClaims
   ) {
     return this.canMultiple(
-      [`Project.${project.id}.Update`, 'Project.*.Update'],
-      accountData
+      [`Project.${project.id}.Update`, 'Project.&.Update', 'Project.*.Update'],
+      accountData,
+      project,
+      'created_by'
     );
   }
 
@@ -39,8 +42,14 @@ export default class ProjectsPolicy extends BasePolicy {
     accountData?: JwtClaims
   ) {
     return this.canMultiple(
-      [`Project.${project.id}.Destroy`, 'Project.*.Destroy'],
-      accountData
+      [
+        `Project.${project.id}.Destroy`,
+        'Project.&.Destroy',
+        'Project.*.Destroy',
+      ],
+      accountData,
+      project,
+      'created_by'
     );
   }
 }

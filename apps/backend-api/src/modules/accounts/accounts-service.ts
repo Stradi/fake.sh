@@ -31,6 +31,7 @@ export default class AccountsService {
             group: true,
           },
         },
+        projects: true,
       },
     });
 

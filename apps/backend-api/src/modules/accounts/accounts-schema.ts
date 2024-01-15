@@ -1,3 +1,4 @@
+import { projectsTable } from '@modules/projects/projects-schema';
 import { accountGroupTable } from '@modules/shared/account-group-schema';
 import { relations, sql } from 'drizzle-orm';
 import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
@@ -17,4 +18,5 @@ export const accountsTable = pgTable('accounts', {
 
 export const accountsRelations = relations(accountsTable, ({ many }) => ({
   accountGroup: many(accountGroupTable),
+  projects: many(projectsTable),
 }));
