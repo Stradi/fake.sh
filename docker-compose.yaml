@@ -8,6 +8,9 @@ services:
       - 3000:3000
     networks:
       - shared
+    depends_on:
+      - postgres-db
+
   backend-api:
     build:
       context: .
@@ -17,7 +20,23 @@ services:
       - 3001:3001
     networks:
       - shared
+    depends_on:
+      - postgres-db
+
+  postgres-db:
+    image: postgres:alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - shared
+    volumes:
+      - postgres-db-data:/var/lib/postgresql/data
 
 networks:
   shared:
     name: shared
+
+volumes:
+  postgres-db-data:
