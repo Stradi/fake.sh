@@ -1,5 +1,5 @@
 import type { Handler } from '@fake.sh/backend-common';
-import { BaseError, CrudController } from '@fake.sh/backend-common';
+import { CrudController } from '@fake.sh/backend-common';
 import { CreateBody, IndexQuery, ShowQuery, UpdateBody } from './projects-dto';
 import ProjectsPolicy from './projects-policy';
 import ProjectsService from './projects-service';
@@ -19,7 +19,7 @@ export default class ProjectsController extends CrudController {
     const records = await this.service.index(q);
 
     return this.ok(ctx, {
-      message: `Fetched ${records.length} records`,
+      message: `Fetched ${records.length} projects`,
       payload: records,
     });
   };
@@ -27,18 +27,10 @@ export default class ProjectsController extends CrudController {
   protected show: Handler<ApiPath<true>> = async (ctx) => {
     const q = this.validateQuery(ctx, ShowQuery);
     const record = await this.service.show(ctx.req.param('id'), q);
-    if (!record) {
-      return this.notFound(ctx, {
-        code: 'PROJECT_NOT_FOUND',
-        message: `Record with id ${ctx.req.param('id')} not found`,
-        action: 'Please check the id and try again',
-      });
-    }
-
     await this.checkPolicy(this.policy, 'show', record, ctx.get('jwtPayload'));
 
     return this.ok(ctx, {
-      message: `Fetched record with id ${ctx.req.param('id')}`,
+      message: `Fetched project with id ${ctx.req.param('id')}`,
       payload: record,
     });
   };
@@ -75,21 +67,9 @@ export default class ProjectsController extends CrudController {
     );
 
     const updatedRecord = await this.service.update(ctx.req.param('id'), body);
-    if (!updatedRecord) {
-      throw new BaseError({
-        code: 'PROJECT_UPDATE_FAILED',
-        message: `Failed to update record with id ${ctx.req.param('id')}`,
-        action: 'Please try again later',
-        additionalData: {
-          record,
-          body,
-        },
-      });
-    }
-
     return this.ok(ctx, {
       message: `Updated record with id ${record.id}`,
-      payload: record,
+      payload: updatedRecord,
     });
   };
 
@@ -111,20 +91,9 @@ export default class ProjectsController extends CrudController {
     );
 
     const deletedRecord = await this.service.destroy(ctx.req.param('id'));
-    if (!deletedRecord) {
-      throw new BaseError({
-        code: 'PROJECT_DELETE_FAILED',
-        message: `Failed to delete record with id ${ctx.req.param('id')}`,
-        action: 'Please try again later',
-        additionalData: {
-          record,
-        },
-      });
-    }
-
     return this.ok(ctx, {
-      message: `Deleted record with id ${record.id}`,
-      payload: record,
+      message: `Deleted record with id ${deletedRecord.id}`,
+      payload: deletedRecord,
     });
   };
 }

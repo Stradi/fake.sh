@@ -1,6 +1,8 @@
-import { generateId, slugify } from '@fake.sh/backend-common';
+/* eslint-disable import/no-named-as-default-member -- weird, prolly a bug in Bun */
+import { BaseError, generateId, slugify } from '@fake.sh/backend-common';
 import { getDb } from '@lib/database';
 import { eq } from 'drizzle-orm';
+import pg from 'postgres';
 import type {
   CreateBody,
   IndexQuery,
@@ -33,48 +35,78 @@ export default class ProjectsService {
     });
 
     if (records.length === 0) {
-      return null;
+      throw new BaseError({
+        statusCode: 404,
+        code: 'PROJECT_NOT_FOUND',
+        message: `Project with id ${id} could not found`,
+        action: 'Please check the id and try again',
+      });
     }
 
     return records[0];
   }
 
-  public async create(body: CreateBody) {
-    const record = await this.db
-      .insert(projectsTable)
-      .values({
-        id: generateId(),
-        name: body.name,
-        slug: slugify(body.name),
-      })
-      .returning();
+  public async create(
+    body: CreateBody,
+    addSlug = false
+  ): Promise<typeof projectsTable.$inferInsert> {
+    try {
+      const record = await this.db
+        .insert(projectsTable)
+        .values({
+          id: generateId(),
+          name: body.name,
+          slug: slugify(body.name, addSlug ? 5 : 0),
+        })
+        .returning();
 
-    return record[0];
+      return record[0];
+    } catch (error) {
+      if (error instanceof pg.PostgresError) {
+        if (error.code === '23505') {
+          // If we have unique constraint error, we will add id to slug and try again
+          return this.create(body, true);
+        }
+      }
+
+      throw error;
+    }
   }
 
-  public async update(id: string, body: UpdateBody) {
+  public async update(
+    id: string,
+    body: UpdateBody,
+    addSlug = false
+  ): Promise<typeof projectsTable.$inferInsert> {
     let slug: string | undefined;
-    if (body.slug) {
-      slug = slugify(body.slug);
-    } else if (body.name) {
-      slug = slugify(body.name);
+    if (body.name) {
+      slug = slugify(body.name, addSlug ? 5 : 0);
+    } else if (body.slug) {
+      slug = slugify(body.slug, addSlug ? 5 : 0);
     }
 
-    const records = await this.db
-      .update(projectsTable)
-      .set({
-        name: body.name,
-        slug,
-        updated_at: new Date(),
-      })
-      .where(eq(projectsTable.id, id))
-      .returning();
+    try {
+      const records = await this.db
+        .update(projectsTable)
+        .set({
+          name: body.name,
+          slug,
+          updated_at: new Date(),
+        })
+        .where(eq(projectsTable.id, id))
+        .returning();
 
-    if (records.length === 0) {
-      return null;
+      return records[0];
+    } catch (error) {
+      if (error instanceof pg.PostgresError) {
+        if (error.code === '23505') {
+          // If we have unique constraint error, we will add id to slug and try again
+          return this.update(id, body, true);
+        }
+      }
+
+      throw error;
     }
-
-    return records[0];
   }
 
   public async destroy(id: string) {
@@ -82,10 +114,6 @@ export default class ProjectsService {
       .delete(projectsTable)
       .where(eq(projectsTable.id, id))
       .returning();
-
-    if (records.length === 0) {
-      return null;
-    }
 
     return records[0];
   }
