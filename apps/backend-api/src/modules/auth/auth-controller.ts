@@ -1,5 +1,5 @@
 import type { Handler } from '@fake.sh/backend-common';
-import { BaseController } from '@fake.sh/backend-common';
+import { BaseController, ResourceNotFoundError } from '@fake.sh/backend-common';
 import AccountsService from '@modules/accounts/accounts-service';
 import { extractJwtPayload, generateJwt, type JwtClaims } from '@utils/jwt';
 import type { Context } from 'hono';
@@ -24,16 +24,9 @@ export default class AuthController extends BaseController {
     const jwtPayload = ctx.get('jwtPayload') as JwtClaims;
 
     const account = await this.accountsService.show(jwtPayload.id);
-    if (!account) {
-      return this.badRequest(ctx, {
-        code: 'NO_ACCOUNT',
-        message: 'Account does not exists',
-        action: 'Please login again',
-      });
-    }
 
     return this.ok(ctx, {
-      message: 'Fetch account successfully',
+      message: 'Fetched authenticated account successfully',
       payload: account,
     });
   };
@@ -42,14 +35,6 @@ export default class AuthController extends BaseController {
     const body = await this.validateBody(ctx, LoginBody);
 
     const account = await this.authService.login(body);
-    if (!account) {
-      return this.badRequest(ctx, {
-        code: 'INVALID_CREDENTIALS',
-        message: 'Provided credentials are invalid',
-        action: 'Check your email and password, then try again',
-      });
-    }
-
     const token = await generateJwt({
       id: account.id,
       email: account.email,
@@ -67,14 +52,6 @@ export default class AuthController extends BaseController {
     const body = await this.validateBody(ctx, RegisterBody);
 
     const record = await this.authService.register(body);
-    if (!record) {
-      return this.badRequest(ctx, {
-        code: 'CREDENTIALS_ALREADY_EXISTS',
-        message: 'Provided credentials already exists',
-        action: 'Try using different email',
-      });
-    }
-
     const token = await generateJwt({
       id: record.account.id,
       email: record.account.email,
@@ -95,11 +72,7 @@ export default class AuthController extends BaseController {
 
     const account = await this.accountsService.show(jwtPayload.id);
     if (!account) {
-      return this.badRequest(ctx, {
-        code: 'NO_ACCOUNT',
-        message: 'Account does not exists',
-        action: 'Please login again',
-      });
+      throw new ResourceNotFoundError('Account', jwtPayload.id);
     }
 
     const newToken = await generateJwt({

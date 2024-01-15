@@ -12,8 +12,10 @@ export default class AccountsPolicy extends BasePolicy {
     accountData?: JwtClaims
   ) {
     return this.canMultiple(
-      [`Account.${account.id}.Show`, 'Account.*.Show'],
-      accountData
+      [`Account.${account.id}.Show`, 'Account.&.Show', 'Account.*.Show'],
+      accountData,
+      account,
+      'id'
     );
   }
 
@@ -23,7 +25,9 @@ export default class AccountsPolicy extends BasePolicy {
   ) {
     return this.canMultiple(
       [`Account.${account.id}.Update`, 'Account.&.Update', 'Account.*.Update'],
-      accountData
+      accountData,
+      account,
+      'id'
     );
   }
 
@@ -37,7 +41,9 @@ export default class AccountsPolicy extends BasePolicy {
         'Account.&.Destroy',
         'Account.*.Destroy',
       ],
-      accountData
+      accountData,
+      account,
+      'id'
     );
   }
 }

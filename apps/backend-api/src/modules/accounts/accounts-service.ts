@@ -1,3 +1,4 @@
+import { ResourceNotFoundError } from '@fake.sh/backend-common';
 import { getDb } from '@lib/database';
 import { eq } from 'drizzle-orm';
 import type { IndexQuery, UpdateBody } from './accounts-dto';
@@ -16,6 +17,7 @@ export default class AccountsService {
             group: true,
           },
         },
+        projects: query.with_projects || undefined,
       },
     });
 
@@ -36,7 +38,7 @@ export default class AccountsService {
     });
 
     if (records.length === 0) {
-      return null;
+      throw new ResourceNotFoundError('Account', id);
     }
 
     return records[0];
@@ -55,10 +57,6 @@ export default class AccountsService {
       .where(eq(accountsTable.id, id))
       .returning();
 
-    if (records.length === 0) {
-      return null;
-    }
-
     return records[0];
   }
 
@@ -67,10 +65,6 @@ export default class AccountsService {
       .delete(accountsTable)
       .where(eq(accountsTable.id, id))
       .returning();
-
-    if (records.length === 0) {
-      return null;
-    }
 
     return records[0];
   }
