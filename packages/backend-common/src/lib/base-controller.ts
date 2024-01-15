@@ -1,6 +1,7 @@
 import type { Context, Env, Next } from 'hono';
 import { Hono } from 'hono';
 import { z } from 'zod';
+import PermissionError from '../utils/errors/permission-error';
 import ValidationError from '../utils/errors/validation-error';
 import type { ErrorResponseData, SuccessResponseData } from '../utils/response';
 import { resp } from '../utils/response';
@@ -17,6 +18,24 @@ export default class BaseController {
 
   public router(): Hono {
     throw new Error(`Router is not implemented for ${this.constructor.name}`);
+  }
+
+  public async checkPolicy<T, F extends keyof T>(
+    policy: T,
+    fn: F,
+    // @ts-expect-error -- hmm, weird.
+    ...args: Parameters<T[F]>
+  ): Promise<void> {
+    const policyFnTypeSafe = policy[fn] as unknown as (
+      ...args: unknown[]
+    ) => Promise<boolean>;
+
+    const boundMethod = policyFnTypeSafe.bind(policy);
+    const allowed = await boundMethod(...args);
+
+    if (!allowed) {
+      throw new PermissionError();
+    }
   }
 
   public ok(ctx: Context, additionalData?: SuccessResponseData): ResponseType {
