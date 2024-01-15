@@ -30,6 +30,8 @@ import postgres from 'postgres';
 // eslint-disable-next-line import/no-cycle -- ¯\_(ツ)_/¯
 import { seedGroups } from './seed/groups';
 // eslint-disable-next-line import/no-cycle -- ¯\_(ツ)_/¯
+import { seedAccounts } from './seed/accounts';
+// eslint-disable-next-line import/no-cycle -- ¯\_(ツ)_/¯
 import { seedPermissions } from './seed/permissions';
 
 let client: postgres.Sql | null = null;
@@ -86,4 +88,5 @@ export async function runMigrations() {
 export async function seedDatabase() {
   await seedGroups();
   await seedPermissions();
+  await seedAccounts();
 }
