@@ -1,5 +1,5 @@
 import type { Handler } from '@fake.sh/backend-common';
-import { BaseError, CrudController } from '@fake.sh/backend-common';
+import { CrudController, ResourceNotFoundError } from '@fake.sh/backend-common';
 import { CreateBody, IndexQuery, UpdateBody } from './groups-dto';
 import GroupsPolicy from './groups-policy';
 import GroupsService from './groups-service';
@@ -26,13 +26,6 @@ export default class GroupsController extends CrudController {
 
   protected show: Handler<ApiPath<true>> = async (ctx) => {
     const record = await this.service.show(ctx.req.param('id'));
-    if (!record) {
-      return this.notFound(ctx, {
-        code: 'GROUP_NOT_FOUND',
-        message: `Record with id ${ctx.req.param('id')} not found`,
-        action: 'Please check the id and try again',
-      });
-    }
 
     await this.checkPolicy(this.policy, 'show', record, ctx.get('jwtPayload'));
 
@@ -59,11 +52,7 @@ export default class GroupsController extends CrudController {
 
     const record = await this.service.show(ctx.req.param('id'));
     if (!record) {
-      return this.notFound(ctx, {
-        code: 'GROUP_NOT_FOUND',
-        message: `Record with id ${ctx.req.param('id')} not found`,
-        action: 'Please check the id and try again',
-      });
+      throw new ResourceNotFoundError('Group', ctx.req.param('id'));
     }
 
     await this.checkPolicy(
@@ -74,32 +63,16 @@ export default class GroupsController extends CrudController {
     );
 
     const updatedRecord = await this.service.update(ctx.req.param('id'), body);
-    if (!updatedRecord) {
-      throw new BaseError({
-        code: 'GROUP_UPDATE_FAILED',
-        message: `Failed to update record with id ${ctx.req.param('id')}`,
-        action: 'Please try again later',
-        additionalData: {
-          record,
-          body,
-        },
-      });
-    }
-
     return this.ok(ctx, {
-      message: `Updated record with id ${record.id}`,
-      payload: record,
+      message: `Updated record with id ${updatedRecord.id}`,
+      payload: updatedRecord,
     });
   };
 
   protected delete: Handler<ApiPath<true>> = async (ctx) => {
     const record = await this.service.show(ctx.req.param('id'));
     if (!record) {
-      return this.notFound(ctx, {
-        code: 'GROUP_NOT_FOUND',
-        message: `Record with id ${ctx.req.param('id')} not found`,
-        action: 'Please check the id and try again',
-      });
+      throw new ResourceNotFoundError('Group', ctx.req.param('id'));
     }
 
     await this.checkPolicy(
@@ -110,20 +83,9 @@ export default class GroupsController extends CrudController {
     );
 
     const deletedRecord = await this.service.destroy(ctx.req.param('id'));
-    if (!deletedRecord) {
-      throw new BaseError({
-        code: 'GROUP_DELETE_FAILED',
-        message: `Failed to delete record with id ${ctx.req.param('id')}`,
-        action: 'Please try again later',
-        additionalData: {
-          record,
-        },
-      });
-    }
-
     return this.ok(ctx, {
-      message: `Deleted record with id ${record.id}`,
-      payload: record,
+      message: `Deleted record with id ${deletedRecord.id}`,
+      payload: deletedRecord,
     });
   };
 }

@@ -1,4 +1,4 @@
-import { generateId } from '@fake.sh/backend-common';
+import { ResourceNotFoundError, generateId } from '@fake.sh/backend-common';
 import { getDb } from '@lib/database';
 import { eq } from 'drizzle-orm';
 import type { CreateBody, IndexQuery, UpdateBody } from './groups-dto';
@@ -22,7 +22,7 @@ export default class GroupsService {
     });
 
     if (records.length === 0) {
-      return null;
+      throw new ResourceNotFoundError('Group', id);
     }
 
     return records[0];
@@ -49,10 +49,6 @@ export default class GroupsService {
       .where(eq(groupsTable.id, id))
       .returning();
 
-    if (records.length === 0) {
-      return null;
-    }
-
     return records[0];
   }
 
@@ -61,10 +57,6 @@ export default class GroupsService {
       .delete(groupsTable)
       .where(eq(groupsTable.id, id))
       .returning();
-
-    if (records.length === 0) {
-      return null;
-    }
 
     return records[0];
   }
