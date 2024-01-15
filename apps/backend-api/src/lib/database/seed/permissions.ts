@@ -68,8 +68,6 @@ const DefaultPermissionMatrix: Record<
     'Project.&.Destroy',
 
     'Schema.&.Show',
-    'Schema.&.Update',
-    'Schema.&.Destroy',
 
     'Account.&.Show',
     'Account.&.Update',
@@ -81,8 +79,6 @@ const DefaultPermissionMatrix: Record<
     'Project.&.Destroy',
 
     'Schema.&.Show',
-    'Schema.&.Update',
-    'Schema.&.Destroy',
 
     'Account.&.Show',
     'Account.&.Update',
