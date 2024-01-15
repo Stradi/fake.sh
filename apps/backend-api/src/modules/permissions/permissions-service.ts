@@ -1,4 +1,4 @@
-import { generateId } from '@fake.sh/backend-common';
+import { ResourceNotFoundError, generateId } from '@fake.sh/backend-common';
 import { getDb } from '@lib/database';
 import { eq } from 'drizzle-orm';
 import type { CreateBody, IndexQuery, UpdateBody } from './permissions-dto';
@@ -36,7 +36,7 @@ export default class PermissionsService {
     });
 
     if (records.length === 0) {
-      return null;
+      throw new ResourceNotFoundError('Permission', id);
     }
 
     return records[0];
@@ -63,10 +63,6 @@ export default class PermissionsService {
       .where(eq(permissionsTable.id, id))
       .returning();
 
-    if (records.length === 0) {
-      return null;
-    }
-
     return records[0];
   }
 
@@ -75,10 +71,6 @@ export default class PermissionsService {
       .delete(permissionsTable)
       .where(eq(permissionsTable.id, id))
       .returning();
-
-    if (records.length === 0) {
-      return null;
-    }
 
     return records[0];
   }
