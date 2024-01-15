@@ -1,3 +1,4 @@
+import { accountsTable } from '@modules/accounts/accounts-schema';
 import { projectsTable } from '@modules/projects/projects-schema';
 import { relations, sql } from 'drizzle-orm';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
@@ -21,11 +22,21 @@ export const schemasTable = pgTable('schemas', {
       onDelete: 'cascade',
       onUpdate: 'cascade',
     }),
+  created_by: text('created_by')
+    .notNull()
+    .references((): AnyPgColumn => accountsTable.id, {
+      onDelete: 'cascade',
+      onUpdate: 'cascade',
+    }),
 });
 
 export const schemasRelations = relations(schemasTable, ({ one }) => ({
   project: one(projectsTable, {
     fields: [schemasTable.project_id],
     references: [projectsTable.id],
+  }),
+  owner: one(accountsTable, {
+    fields: [schemasTable.created_by],
+    references: [accountsTable.id],
   }),
 }));

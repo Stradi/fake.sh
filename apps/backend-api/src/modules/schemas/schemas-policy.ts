@@ -12,8 +12,10 @@ export default class SchemasPolicy extends BasePolicy {
     accountData?: JwtClaims
   ) {
     return this.canMultiple(
-      [`Schema.${schema.id}.Show`, 'Schema.*.Show'],
-      accountData
+      [`Schema.${schema.id}.Show`, 'Schema.&.Read', 'Schema.*.Show'],
+      accountData,
+      schema,
+      'created_by'
     );
   }
 
@@ -26,8 +28,10 @@ export default class SchemasPolicy extends BasePolicy {
     accountData?: JwtClaims
   ) {
     return this.canMultiple(
-      [`Schema.${schema.id}.Update`, 'Schema.*.Update'],
-      accountData
+      [`Schema.${schema.id}.Update`, 'Schema.&.Update', 'Schema.*.Update'],
+      accountData,
+      schema,
+      'created_by'
     );
   }
 
@@ -36,8 +40,10 @@ export default class SchemasPolicy extends BasePolicy {
     accountData?: JwtClaims
   ) {
     return this.canMultiple(
-      [`Schema.${schema.id}.Destroy`, 'Schema.*.Destroy'],
-      accountData
+      [`Schema.${schema.id}.Destroy`, 'Schema.&.Destroy', 'Schema.*.Destroy'],
+      accountData,
+      schema,
+      'created_by'
     );
   }
 }

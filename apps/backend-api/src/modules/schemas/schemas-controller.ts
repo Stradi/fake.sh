@@ -1,5 +1,5 @@
 import type { Handler } from '@fake.sh/backend-common';
-import { BaseError, CrudController } from '@fake.sh/backend-common';
+import { CrudController, ResourceNotFoundError } from '@fake.sh/backend-common';
 import { CreateBody, IndexQuery, ShowQuery, UpdateBody } from './schemas-dto';
 import SchemasPolicy from './schemas-policy';
 import SchemasService from './schemas-service';
@@ -33,15 +33,6 @@ export default class SchemasController extends CrudController {
       ctx.req.param('schemaId'),
       q
     );
-    if (!record) {
-      return this.notFound(ctx, {
-        code: 'SCHEMA_NOT_FOUND',
-        message: `Schema with id ${ctx.req.param(
-          'schemaId'
-        )} not found for project with id ${ctx.req.param('schemaId')}`,
-        action: 'Please check the id and try again',
-      });
-    }
 
     await this.checkPolicy(this.policy, 'show', record, ctx.get('jwtPayload'));
 
@@ -57,7 +48,11 @@ export default class SchemasController extends CrudController {
     await this.checkPolicy(this.policy, 'create', ctx.get('jwtPayload'));
 
     const body = await this.validateBody(ctx, CreateBody);
-    const record = await this.service.create(ctx.req.param('projectId'), body);
+    const record = await this.service.create(
+      ctx.req.param('projectId'),
+      body,
+      ctx.get('jwtPayload')
+    );
 
     return this.ok(ctx, {
       message: `Created schema for project with id ${ctx.req.param(
@@ -76,13 +71,7 @@ export default class SchemasController extends CrudController {
       {}
     );
     if (!record) {
-      return this.notFound(ctx, {
-        code: 'SCHEMA_NOT_FOUND',
-        message: `Schema with id ${ctx.req.param(
-          'schemaId'
-        )} not found for project with id ${ctx.req.param('schemaId')}`,
-        action: 'Please check the id and try again',
-      });
+      throw new ResourceNotFoundError('Schema', ctx.req.param('schemaId'));
     }
 
     await this.checkPolicy(
@@ -97,19 +86,6 @@ export default class SchemasController extends CrudController {
       ctx.req.param('schemaId'),
       body
     );
-    if (!updatedRecord) {
-      throw new BaseError({
-        code: 'SCHEMA_UPDATE_FAILED',
-        message: `Failed to update schema with id ${ctx.req.param(
-          'schemaId'
-        )} for project with id ${ctx.req.param('schemaId')}`,
-        action: 'Please try again later',
-        additionalData: {
-          record,
-          body,
-        },
-      });
-    }
 
     return this.ok(ctx, {
       message: `Updated schema with id ${ctx.req.param(
@@ -126,13 +102,7 @@ export default class SchemasController extends CrudController {
       {}
     );
     if (!record) {
-      return this.notFound(ctx, {
-        code: 'SCHEMA_NOT_FOUND',
-        message: `Schema with id ${ctx.req.param(
-          'schemaId'
-        )} not found for project with id ${ctx.req.param('schemaId')}`,
-        action: 'Please check the id and try again',
-      });
+      throw new ResourceNotFoundError('Schema', ctx.req.param('schemaId'));
     }
 
     await this.checkPolicy(
@@ -146,18 +116,6 @@ export default class SchemasController extends CrudController {
       ctx.req.param('projectId'),
       ctx.req.param('schemaId')
     );
-    if (!deletedRecord) {
-      throw new BaseError({
-        code: 'SCHEMA_DELETE_FAILED',
-        message: `Failed to delete schema with id ${ctx.req.param(
-          'schemaId'
-        )} for project with id ${ctx.req.param('schemaId')}`,
-        action: 'Please try again later',
-        additionalData: {
-          record,
-        },
-      });
-    }
 
     return this.ok(ctx, {
       message: `Deleted schema with id ${ctx.req.param(

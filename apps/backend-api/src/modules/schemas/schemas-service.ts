@@ -1,5 +1,10 @@
-import { BaseError, generateId } from '@fake.sh/backend-common';
+import {
+  BaseError,
+  ResourceNotFoundError,
+  generateId,
+} from '@fake.sh/backend-common';
 import { getDb } from '@lib/database';
+import type { JwtClaims } from '@utils/jwt';
 import { and, eq, sql } from 'drizzle-orm';
 import type {
   CreateBody,
@@ -19,6 +24,7 @@ export default class SchemasService {
       offset: query.page ? (query.page - 1) * (query.limit || 10) : 0,
       with: {
         project: query.with_project || undefined,
+        owner: query.with_owner || undefined,
       },
     });
 
@@ -33,17 +39,22 @@ export default class SchemasService {
       ),
       with: {
         project: query.with_project || undefined,
+        owner: query.with_owner || undefined,
       },
     });
 
     if (records.length === 0) {
-      return null;
+      throw new ResourceNotFoundError('Schema', schemaId);
     }
 
     return records[0];
   }
 
-  public async create(projectId: string, data: CreateBody) {
+  public async create(
+    projectId: string,
+    data: CreateBody,
+    accountData: JwtClaims
+  ) {
     const existingVersion = await this.db.query.schemas.findMany({
       where: and(
         eq(schemasTable.project_id, projectId),
@@ -67,12 +78,9 @@ export default class SchemasService {
         version: data.version,
         data: data.data,
         project_id: projectId,
+        created_by: accountData.id,
       })
       .returning();
-
-    if (record.length === 0) {
-      return null;
-    }
 
     await this.createSchemaTables(projectId, record[0].id, data);
 
@@ -94,10 +102,6 @@ export default class SchemasService {
       )
       .returning();
 
-    if (records.length === 0) {
-      return null;
-    }
-
     return records[0];
   }
 
@@ -111,10 +115,6 @@ export default class SchemasService {
         )
       )
       .returning();
-
-    if (records.length === 0) {
-      return null;
-    }
 
     await this.deleteSchemaTables(records[0]);
     return records[0];
