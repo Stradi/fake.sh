@@ -1,5 +1,9 @@
 /* eslint-disable import/no-named-as-default-member -- weird, prolly a bug in Bun */
-import { BaseError, generateId, slugify } from '@fake.sh/backend-common';
+import {
+  ResourceNotFoundError,
+  generateId,
+  slugify,
+} from '@fake.sh/backend-common';
 import { getDb } from '@lib/database';
 import type { JwtClaims } from '@utils/jwt';
 import { eq } from 'drizzle-orm';
@@ -38,12 +42,7 @@ export default class ProjectsService {
     });
 
     if (records.length === 0) {
-      throw new BaseError({
-        statusCode: 404,
-        code: 'PROJECT_NOT_FOUND',
-        message: `Project with id ${id} could not found`,
-        action: 'Please check the id and try again',
-      });
+      throw new ResourceNotFoundError('Project', id);
     }
 
     return records[0];

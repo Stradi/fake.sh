@@ -9,6 +9,7 @@ export {
   default as BaseError,
   type ErrorProperties,
 } from './utils/errors/base-error';
+export { default as ResourceNotFoundError } from './utils/errors/resource-not-found-error';
 export { default as ValidationError } from './utils/errors/validation-error';
 export { generateId, slugify } from './utils/id';
 export { log } from './utils/logger';

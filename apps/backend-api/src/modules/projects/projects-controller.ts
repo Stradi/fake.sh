@@ -1,5 +1,5 @@
 import type { Handler } from '@fake.sh/backend-common';
-import { CrudController } from '@fake.sh/backend-common';
+import { CrudController, ResourceNotFoundError } from '@fake.sh/backend-common';
 import { CreateBody, IndexQuery, ShowQuery, UpdateBody } from './projects-dto';
 import ProjectsPolicy from './projects-policy';
 import ProjectsService from './projects-service';
@@ -52,11 +52,7 @@ export default class ProjectsController extends CrudController {
 
     const record = await this.service.show(ctx.req.param('id'), {});
     if (!record) {
-      return this.notFound(ctx, {
-        code: 'PROJECT_NOT_FOUND',
-        message: `Record with id ${ctx.req.param('id')} not found`,
-        action: 'Please check the id and try again',
-      });
+      throw new ResourceNotFoundError('Project', ctx.req.param('id'));
     }
 
     await this.checkPolicy(
@@ -76,11 +72,7 @@ export default class ProjectsController extends CrudController {
   protected destroy: Handler<ApiPath<true>> = async (ctx) => {
     const record = await this.service.show(ctx.req.param('id'), {});
     if (!record) {
-      return this.notFound(ctx, {
-        code: 'PROJECT_NOT_FOUND',
-        message: `Record with id ${ctx.req.param('id')} not found`,
-        action: 'Please check the id and try again',
-      });
+      throw new ResourceNotFoundError('Project', ctx.req.param('id'));
     }
 
     await this.checkPolicy(
