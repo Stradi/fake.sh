@@ -1,18 +1,18 @@
 import { accountsTable } from '@modules/accounts/accounts-schema';
 import { groupsTable } from '@modules/groups/groups-schema';
 import { relations } from 'drizzle-orm';
-import type { AnySQLiteColumn } from 'drizzle-orm/sqlite-core';
-import { primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import type { AnyPgColumn } from 'drizzle-orm/pg-core';
+import { pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
 
-export const accountGroupTable = sqliteTable(
+export const accountGroupTable = pgTable(
   'account_group',
   {
-    account_id: text('account_id', { mode: 'text' })
+    account_id: text('account_id')
       .notNull()
-      .references((): AnySQLiteColumn => accountsTable.id),
-    group_id: text('group_id', { mode: 'text' })
+      .references((): AnyPgColumn => accountsTable.id),
+    group_id: text('group_id')
       .notNull()
-      .references((): AnySQLiteColumn => groupsTable.id),
+      .references((): AnyPgColumn => groupsTable.id),
   },
   (table) => {
     return {

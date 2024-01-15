@@ -1,18 +1,18 @@
 import { groupsTable } from '@modules/groups/groups-schema';
 import { permissionsTable } from '@modules/permissions/permissions-schema';
 import { relations } from 'drizzle-orm';
-import type { AnySQLiteColumn } from 'drizzle-orm/sqlite-core';
-import { primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import type { AnyPgColumn } from 'drizzle-orm/pg-core';
+import { pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
 
-export const groupPermissionTable = sqliteTable(
+export const groupPermissionTable = pgTable(
   'group_permission',
   {
-    group_id: text('group_id', { mode: 'text' })
+    group_id: text('group_id')
       .notNull()
-      .references((): AnySQLiteColumn => groupsTable.id),
-    permission_id: text('permission_id', { mode: 'text' })
+      .references((): AnyPgColumn => groupsTable.id),
+    permission_id: text('permission_id')
       .notNull()
-      .references((): AnySQLiteColumn => permissionsTable.id),
+      .references((): AnyPgColumn => permissionsTable.id),
   },
   (table) => {
     return {

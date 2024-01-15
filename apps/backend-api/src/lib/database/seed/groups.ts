@@ -1,6 +1,7 @@
 import { generateId, log } from '@fake.sh/backend-common';
 import { groupsTable } from '@modules/groups/groups-schema';
 import { eq, sql } from 'drizzle-orm';
+// eslint-disable-next-line import/no-cycle -- ¯\_(ツ)_/¯
 import { getDb } from '..';
 
 export const DefaultGroups = ['Admin', 'Registered User', 'Paid User'] as const;
@@ -20,9 +21,10 @@ async function createGroupOrDie(groupName: string) {
       id: sql<string>`id`.mapWith(String),
     })
     .from(groupsTable)
-    .where(eq(groupsTable.name, groupName));
+    .where(eq(groupsTable.name, groupName))
+    .groupBy(groupsTable.id);
 
-  if (exists[0].count > 0) {
+  if (exists.length > 0 && exists[0].count > 0) {
     return exists[0];
   }
 

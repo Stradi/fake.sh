@@ -1,33 +1,12 @@
 {
   "version": "5",
-  "dialect": "sqlite",
+  "dialect": "pg",
   "entries": [
     {
       "idx": 0,
       "version": "5",
-      "when": 1705241298088,
-      "tag": "0000_strong_nitro",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1705248732142,
-      "tag": "0001_moaning_goliath",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1705256088465,
-      "tag": "0002_handy_northstar",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1705258040437,
-      "tag": "0003_wise_shiver_man",
+      "when": 1705325301080,
+      "tag": "0000_certain_carnage",
       "breakpoints": true
     }
   ]

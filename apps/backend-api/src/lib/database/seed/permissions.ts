@@ -108,9 +108,10 @@ async function createPermissionOrDie(permissionName: string) {
       id: sql<string>`id`.mapWith(String),
     })
     .from(permissionsTable)
-    .where(eq(permissionsTable.name, permissionName));
+    .where(eq(permissionsTable.name, permissionName))
+    .groupBy(permissionsTable.id);
 
-  if (exists[0].count > 0) {
+  if (exists.length > 0 && exists[0].count > 0) {
     return exists[0];
   }
 

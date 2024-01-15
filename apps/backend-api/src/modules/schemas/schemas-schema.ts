@@ -1,23 +1,23 @@
 import { projectsTable } from '@modules/projects/projects-schema';
 import { relations, sql } from 'drizzle-orm';
-import type { AnySQLiteColumn } from 'drizzle-orm/sqlite-core';
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import type { AnyPgColumn } from 'drizzle-orm/pg-core';
+import { integer, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 
-export const schemasTable = sqliteTable('schemas', {
-  id: text('id', { mode: 'text' }).primaryKey().notNull(),
-  created_at: integer('created_at', { mode: 'timestamp_ms' })
+export const schemasTable = pgTable('schemas', {
+  id: text('id').primaryKey().notNull(),
+  created_at: timestamp('created_at')
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
-  updated_at: integer('updated_at', { mode: 'timestamp_ms' })
+  updated_at: timestamp('updated_at')
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
 
-  version: integer('version', { mode: 'number' }).notNull(),
-  data: text('data', { mode: 'json' }).notNull(),
+  version: integer('version').notNull(),
+  data: text('data').notNull(), // Maybe JSONB or JSON?
 
-  project_id: text('project_id', { mode: 'text' })
+  project_id: text('project_id')
     .notNull()
-    .references((): AnySQLiteColumn => projectsTable.id),
+    .references((): AnyPgColumn => projectsTable.id),
 });
 
 export const schemasRelations = relations(schemasTable, ({ one }) => ({

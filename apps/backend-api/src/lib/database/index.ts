@@ -24,21 +24,24 @@ import {
   groupPermissionRelations,
   groupPermissionTable,
 } from '@modules/shared/group-permission-schema';
-import Database from 'bun:sqlite';
-import { drizzle } from 'drizzle-orm/bun-sqlite';
-import { migrate } from 'drizzle-orm/bun-sqlite/migrator';
-import fs from 'node:fs/promises';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import { migrate } from 'drizzle-orm/postgres-js/migrator';
+import postgres from 'postgres';
 // eslint-disable-next-line import/no-cycle -- ¯\_(ツ)_/¯
 import { seedGroups } from './seed/groups';
 // eslint-disable-next-line import/no-cycle -- ¯\_(ツ)_/¯
 import { seedPermissions } from './seed/permissions';
 
-export function getDb() {
-  const file = new Database(`${process.cwd()}/data/main.sqlite`, {
-    create: true,
-  });
+let client: postgres.Sql | null = null;
 
-  return drizzle(file, {
+export function getDb() {
+  if (!client) {
+    client = postgres('postgres://postgres:postgres@localhost:5432', {
+      max: 5,
+    });
+  }
+
+  return drizzle(client, {
     schema: {
       projects: projectsTable,
       projectsRelations,
@@ -65,8 +68,15 @@ export function getDb() {
 }
 
 export async function runMigrations() {
-  await fs.mkdir('./data', { recursive: true });
-  migrate(getDb(), {
+  const migrationClient = postgres(
+    'postgres://postgres:postgres@localhost:5432',
+    {
+      max: 1,
+    }
+  );
+  const db = drizzle(migrationClient);
+
+  await migrate(db, {
     migrationsFolder: `${import.meta.dir}/generated`,
   });
 
