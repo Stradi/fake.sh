@@ -38,7 +38,7 @@ export default function authMiddleware(require = false): MiddlewareHandler {
       }
     }
 
-    const authToken = cookiePayload.authToken;
+    const authToken = cookiePayload.token;
     if (!authToken && require) {
       throw new BaseError({
         statusCode: 401,
