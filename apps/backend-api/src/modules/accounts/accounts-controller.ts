@@ -1,6 +1,7 @@
 import type { Handler } from '@fake.sh/backend-common';
 import { CrudController } from '@fake.sh/backend-common';
 import { IndexQuery, UpdateBody } from './accounts-dto';
+import AccountsPolicy from './accounts-policy';
 import AccountsService from './accounts-service';
 
 type ApiPath<AccountId extends boolean = false> = AccountId extends true
@@ -9,8 +10,11 @@ type ApiPath<AccountId extends boolean = false> = AccountId extends true
 
 export class AccountsController extends CrudController {
   private readonly service = new AccountsService();
+  private readonly policy = new AccountsPolicy();
 
   protected index: Handler<ApiPath> = async (ctx) => {
+    await this.checkPolicy(this.policy, 'index', ctx.get('jwtPayload'));
+
     const q = this.validateQuery(ctx, IndexQuery);
     const records = await this.service.index(q);
 
@@ -30,6 +34,8 @@ export class AccountsController extends CrudController {
       });
     }
 
+    await this.checkPolicy(this.policy, 'show', record, ctx.get('jwtPayload'));
+
     return this.ok(ctx, {
       message: `Fetched record with id ${ctx.req.param('id')}`,
       payload: record,
@@ -48,6 +54,13 @@ export class AccountsController extends CrudController {
       });
     }
 
+    await this.checkPolicy(
+      this.policy,
+      'update',
+      record,
+      ctx.get('jwtPayload')
+    );
+
     const updatedRecord = await this.service.update(ctx.req.param('id'), body);
 
     return this.ok(ctx, {
@@ -65,6 +78,13 @@ export class AccountsController extends CrudController {
         action: 'Please check the id and try again',
       });
     }
+
+    await this.checkPolicy(
+      this.policy,
+      'destroy',
+      record,
+      ctx.get('jwtPayload')
+    );
 
     const deletedRecord = await this.service.destroy(ctx.req.param('id'));
 

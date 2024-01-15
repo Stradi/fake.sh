@@ -1,6 +1,7 @@
 import type { Handler } from '@fake.sh/backend-common';
 import { BaseError, CrudController } from '@fake.sh/backend-common';
 import { CreateBody, IndexQuery, ShowQuery, UpdateBody } from './schemas-dto';
+import SchemasPolicy from './schemas-policy';
 import SchemasService from './schemas-service';
 
 type ApiPath<SchemaId extends boolean = false> = SchemaId extends true
@@ -9,8 +10,11 @@ type ApiPath<SchemaId extends boolean = false> = SchemaId extends true
 
 export default class SchemasController extends CrudController {
   private readonly service = new SchemasService();
+  private readonly policy = new SchemasPolicy();
 
   public index: Handler<ApiPath> = async (ctx) => {
+    await this.checkPolicy(this.policy, 'index', ctx.get('jwtPayload'));
+
     const q = this.validateQuery(ctx, IndexQuery);
     const records = await this.service.index(ctx.req.param('projectId'), q);
 
@@ -39,6 +43,8 @@ export default class SchemasController extends CrudController {
       });
     }
 
+    await this.checkPolicy(this.policy, 'show', record, ctx.get('jwtPayload'));
+
     return this.ok(ctx, {
       message: `Fetched schema with id ${ctx.req.param(
         'schemaId'
@@ -48,6 +54,8 @@ export default class SchemasController extends CrudController {
   };
 
   public create: Handler<ApiPath> = async (ctx) => {
+    await this.checkPolicy(this.policy, 'create', ctx.get('jwtPayload'));
+
     const body = await this.validateBody(ctx, CreateBody);
     const record = await this.service.create(ctx.req.param('projectId'), body);
 
@@ -76,6 +84,13 @@ export default class SchemasController extends CrudController {
         action: 'Please check the id and try again',
       });
     }
+
+    await this.checkPolicy(
+      this.policy,
+      'update',
+      record,
+      ctx.get('jwtPayload')
+    );
 
     const updatedRecord = await this.service.update(
       ctx.req.param('projectId'),
@@ -119,6 +134,13 @@ export default class SchemasController extends CrudController {
         action: 'Please check the id and try again',
       });
     }
+
+    await this.checkPolicy(
+      this.policy,
+      'destroy',
+      record,
+      ctx.get('jwtPayload')
+    );
 
     const deletedRecord = await this.service.destroy(
       ctx.req.param('projectId'),
