@@ -29,13 +29,13 @@ export function generateJwt(claims: CustomJwtClaims) {
       nbf: Math.floor(Date.now() / 1000) - 1,
       iat: Math.floor(Date.now() / 1000),
     },
-    env('JWT_SECRET'),
+    env('JWT_SECRET', ''),
     'HS256'
   );
 }
 
 export function verifyJwt(token: string) {
-  return verify(token, env('JWT_SECRET'), 'HS256') as Promise<JwtClaims>;
+  return verify(token, env('JWT_SECRET', ''), 'HS256') as Promise<JwtClaims>;
 }
 
 export function extractJwtPayload(token: string) {

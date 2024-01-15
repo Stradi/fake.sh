@@ -1,4 +1,4 @@
-import { log } from '@fake.sh/backend-common';
+import { env, log } from '@fake.sh/backend-common';
 import {
   accountsRelations,
   accountsTable,
@@ -38,7 +38,7 @@ let client: postgres.Sql | null = null;
 
 export function getDb() {
   if (!client) {
-    client = postgres('postgres://postgres:postgres@localhost:5432', {
+    client = postgres(env('PG_CONNECTION_STRING', ''), {
       max: 5,
     });
   }
@@ -70,12 +70,9 @@ export function getDb() {
 }
 
 export async function runMigrations() {
-  const migrationClient = postgres(
-    'postgres://postgres:postgres@localhost:5432',
-    {
-      max: 1,
-    }
-  );
+  const migrationClient = postgres(env('PG_CONNECTION_STRING', ''), {
+    max: 1,
+  });
   const db = drizzle(migrationClient);
 
   await migrate(db, {
