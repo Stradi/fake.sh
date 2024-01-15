@@ -3,19 +3,19 @@ import { BaseController, BaseError } from '@fake.sh/backend-common';
 import type { Context } from 'hono';
 import type { RequestInfo } from './helpers';
 import { extractRequestInfo } from './helpers';
+import ensureProjectMiddleware from './middlewares/ensure-project-middleware';
+import ensureResourceMiddleware from './middlewares/ensure-resource-middleware';
+import ensureSchemaVersionMiddleware from './middlewares/ensure-schema-version-middleware';
 import ensureValidRequestMiddleware from './middlewares/ensure-valid-request-middleware';
-import validateResourceMiddleware from './middlewares/validate-resource-middleware';
-import validateTenantMiddleware from './middlewares/validate-tenant-middleware';
-import validateVersionMiddleware from './middlewares/validate-version-middleware';
 
 export default class TenantController extends BaseController {
   public router() {
     return this._app.all(
       '*',
-      validateTenantMiddleware(),
+      ensureProjectMiddleware(),
       ensureValidRequestMiddleware(),
-      validateVersionMiddleware(),
-      validateResourceMiddleware(),
+      ensureSchemaVersionMiddleware(),
+      ensureResourceMiddleware(),
       this.handleRequest
     );
   }
@@ -24,7 +24,7 @@ export default class TenantController extends BaseController {
     const requestInfo = extractRequestInfo(ctx.req.path);
     const method = ctx.req.method;
 
-    const tenant = ctx.get('tenant' as never);
+    const project = ctx.get('project' as never);
     const schemaVersion = ctx.get('schemaVersion' as never);
     const schema = ctx.get('schema' as never);
 
@@ -51,7 +51,7 @@ export default class TenantController extends BaseController {
     }
   };
 
-  private getSingleResource = (ctx: Context, payload: RequestInfo) => {
+  private getSingleResource = async (ctx: Context, payload: RequestInfo) => {
     return this.ok(ctx, {
       message: 'Successfully fetched the resource',
       payload: {

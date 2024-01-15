@@ -2,7 +2,7 @@ import { BaseError } from '@fake.sh/backend-common';
 import db from '@lib/database';
 import { type MiddlewareHandler } from 'hono';
 
-export default function extractTenantMiddleware(): MiddlewareHandler {
+export default function ensureProjectMiddleware(): MiddlewareHandler {
   return async (ctx, next) => {
     const host = ctx.req.header('Host');
     if (!host) {
@@ -23,20 +23,20 @@ export default function extractTenantMiddleware(): MiddlewareHandler {
       });
     }
 
-    const [tenantSlug] = parts;
-
-    const rows = await db`SELECT * FROM projects WHERE slug = ${tenantSlug}`;
+    const [projectSlug] = parts;
+    const rows =
+      await db`SELECT * FROM projects WHERE slug = ${projectSlug} LIMIT 1`;
 
     if (rows.length === 0) {
       throw new BaseError({
-        code: 'INVALID_TENANT',
-        message: 'Provided tenant does not found',
-        action: 'Please check your tenant slug',
+        code: 'PROJECT_NOT_FOUND',
+        message: 'Project does not exists',
+        action: 'Check the provided project slug and try again',
       });
     }
 
-    const [tenant] = rows;
-    ctx.set('tenant', tenant);
+    const [project] = rows;
+    ctx.set('project', project);
 
     await next();
   };

@@ -3,13 +3,13 @@ import db from '@lib/database';
 import { type MiddlewareHandler } from 'hono';
 import { extractRequestInfo } from '../helpers';
 
-export default function validateResourceMiddleware(): MiddlewareHandler {
+export default function ensureResourceMiddleware(): MiddlewareHandler {
   return async (ctx, next) => {
-    const tenant = ctx.get('tenant');
+    const project = ctx.get('project');
     const schemaVersion = ctx.get('schemaVersion');
 
     const rows =
-      await db`SELECT * FROM schemas WHERE project_id = ${tenant.id} AND version = ${schemaVersion}`;
+      await db`SELECT * FROM schemas WHERE project_id = ${project.id} AND version = ${schemaVersion} LIMIT 1`;
     const schema = rows[0];
 
     let parsedSchema: null | object = null;
@@ -42,7 +42,10 @@ export default function validateResourceMiddleware(): MiddlewareHandler {
       });
     }
 
-    ctx.set('schema', parsedSchema);
+    ctx.set('schema', {
+      ...schema,
+      data: parsedSchema,
+    });
     await next();
   };
 }

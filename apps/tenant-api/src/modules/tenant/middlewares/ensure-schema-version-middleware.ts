@@ -3,7 +3,7 @@ import db from '@lib/database';
 import { type MiddlewareHandler } from 'hono';
 import { extractRequestInfo } from '../helpers';
 
-export default function validateVersionMiddleware(): MiddlewareHandler {
+export default function ensureSchemaVersionMiddleware(): MiddlewareHandler {
   return async (ctx, next) => {
     const { version } = extractRequestInfo(ctx.req.path);
     const versionNumber = Number(version.replace('v', ''));
@@ -12,19 +12,20 @@ export default function validateVersionMiddleware(): MiddlewareHandler {
       throw new BaseError({
         code: 'INVALID_VERSION',
         message: 'Version is not a valid number',
-        action: 'Provide a valid version number',
+        action: 'Make sure you are using a valid version number',
       });
     }
 
-    const rows = await db`SELECT id FROM schemas WHERE project_id = ${
-      ctx.get('tenant').id
-    } AND version = ${versionNumber}`;
+    const project = ctx.get('project');
+    const rows =
+      await db`SELECT id FROM schemas WHERE project_id = ${project.id} AND version = ${versionNumber} LIMIT 1`;
 
     if (rows.length === 0) {
       throw new BaseError({
-        code: 'INVALID_VERSION',
-        message: 'Provided version does not found',
-        action: 'Please check your version',
+        code: 'VERSION_NOT_FOUND',
+        message: 'Schema does not have the provided version',
+        action:
+          'Make sure the schema has the provided version number and try again',
       });
     }
 
