@@ -88,6 +88,7 @@ const DefaultPermissionMatrix: Record<
     'Account.&.Update',
     'Account.&.Destroy',
   ],
+  Anonymous: [],
 };
 
 export async function seedPermissions() {

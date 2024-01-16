@@ -28,9 +28,7 @@ type PermissionWithGroup = typeof permissionsTable.$inferSelect & {
   }[];
 };
 
-const DefaultAccountGroups: (typeof DefaultGroups)[number][] = [
-  'Registered User',
-];
+const DefaultAccountGroups: (typeof DefaultGroups)[number][] = ['Anonymous'];
 
 export default class BasePolicy {
   private permissionsService = new PermissionsService();

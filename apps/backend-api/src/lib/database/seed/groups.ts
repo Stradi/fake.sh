@@ -4,7 +4,12 @@ import { eq, sql } from 'drizzle-orm';
 // eslint-disable-next-line import/no-cycle -- ¯\_(ツ)_/¯
 import { getDb } from '..';
 
-export const DefaultGroups = ['Admin', 'Registered User', 'Paid User'] as const;
+export const DefaultGroups = [
+  'Admin',
+  'Registered User',
+  'Paid User',
+  'Anonymous',
+] as const;
 
 export async function seedGroups() {
   for await (const groupName of DefaultGroups) {
