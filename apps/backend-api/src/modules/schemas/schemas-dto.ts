@@ -18,13 +18,22 @@ export const CreateBody = z.object({
   version: z.coerce.number().positive(),
 
   // TODO: Can we do better? probably, but ¯\_(ツ)_/¯
-  // Seriously though, we should probably use JSON as the type here.
-  data: z.string(),
+  data: z.record(
+    z.object({
+      initialCount: z.number().positive(),
+      columns: z.record(z.string()),
+    })
+  ),
 });
 export type CreateBody = z.infer<typeof CreateBody>;
 
 export const UpdateBody = z.object({
   version: z.coerce.number().positive(),
-  data: z.string(),
+  data: z.record(
+    z.object({
+      initialCount: z.number().positive(),
+      columns: z.record(z.string()),
+    })
+  ),
 });
 export type UpdateBody = z.infer<typeof UpdateBody>;

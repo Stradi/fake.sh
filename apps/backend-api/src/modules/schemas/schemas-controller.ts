@@ -22,7 +22,10 @@ export default class SchemasController extends CrudController {
       message: `Fetched ${
         records.length
       } schemas for project with id of ${ctx.req.param('projectId')}`,
-      payload: records,
+      payload: records.map((record) => ({
+        ...record,
+        data: JSON.parse(record.data),
+      })),
     });
   };
 
@@ -40,7 +43,10 @@ export default class SchemasController extends CrudController {
       message: `Fetched schema with id ${ctx.req.param(
         'schemaId'
       )} for project with id ${ctx.req.param('schemaId')}`,
-      payload: record,
+      payload: {
+        ...record,
+        data: JSON.parse(record.data),
+      },
     });
   };
 

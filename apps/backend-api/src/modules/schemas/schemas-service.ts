@@ -76,7 +76,7 @@ export default class SchemasService {
       .values({
         id: generateId(),
         version: data.version,
-        data: data.data,
+        data: JSON.stringify(data.data),
         project_id: projectId,
         created_by: accountData.id,
       })
@@ -92,7 +92,10 @@ export default class SchemasService {
       .update(schemasTable)
       .set({
         version: data.version,
-        data: data.data,
+        // TODO: To update the schema data, we also need to update the tables.
+        //       We need to figure out how to create ALTER TABLE statements from
+        //       the difference between the old and new schema data. Or disable
+        //       this feature :)
       })
       .where(
         and(
@@ -127,12 +130,11 @@ export default class SchemasService {
   ) {
     const tableNamePrefix = `schema_${projectId}_${schemaId}`;
 
-    const schema = JSON.parse(body.data);
-    const resources = Object.keys(schema);
+    const resources = Object.keys(body.data);
 
     for await (const resource of resources) {
       const tableName = `${tableNamePrefix}_${resource}`;
-      const columns = Object.keys(schema[resource]);
+      const columns = Object.keys(body.data[resource]);
 
       // TODO: Change VARCHAR(255) to the correct type. We prolly need to map the JSON Schema types to SQL types.
       await this.db.execute(

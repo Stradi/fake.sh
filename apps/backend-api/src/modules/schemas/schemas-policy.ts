@@ -12,7 +12,7 @@ export default class SchemasPolicy extends BasePolicy {
     accountData?: JwtClaims
   ) {
     return this.canMultiple(
-      [`Schema.${schema.id}.Show`, 'Schema.&.Read', 'Schema.*.Show'],
+      [`Schema.${schema.id}.Show`, 'Schema.&.Show', 'Schema.*.Show'],
       accountData,
       schema,
       'created_by'
