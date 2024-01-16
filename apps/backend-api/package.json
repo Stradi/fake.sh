@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@fake.sh/backend-common": "workspace:^",
+    "@faker-js/faker": "^8.3.1",
     "drizzle-orm": "^0.29.3",
     "hono": "^3.12.3",
     "postgres": "^3.4.3",

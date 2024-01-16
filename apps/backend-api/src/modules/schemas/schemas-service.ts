@@ -4,6 +4,7 @@ import {
   generateId,
 } from '@fake.sh/backend-common';
 import { getDb } from '@lib/database';
+import { callFakerMethod, getColumnTypeForMethod } from '@utils/faker';
 import type { JwtClaims } from '@utils/jwt';
 import { and, eq, sql } from 'drizzle-orm';
 import type {
@@ -14,6 +15,7 @@ import type {
 } from './schemas-dto';
 import { schemasTable } from './schemas-schema';
 
+// TODO: Wrap sequential SQL statements in a transaction.
 export default class SchemasService {
   private readonly db = getDb();
 
@@ -71,6 +73,8 @@ export default class SchemasService {
       });
     }
 
+    this.validateSchemaColumns(data.data);
+
     const record = await this.db
       .insert(schemasTable)
       .values({
@@ -83,6 +87,7 @@ export default class SchemasService {
       .returning();
 
     await this.createSchemaTables(projectId, record[0].id, data);
+    await this.seedSchemaTables(record[0], data.data);
 
     return record[0];
   }
@@ -134,13 +139,17 @@ export default class SchemasService {
 
     for await (const resource of resources) {
       const tableName = `${tableNamePrefix}_${resource}`;
-      const columns = Object.keys(body.data[resource]);
+      const columns = Object.keys(body.data[resource].columns);
+      const dataTypes = Object.values(body.data[resource].columns);
+      const zipped = columns.map((column, idx) => [
+        column,
+        getColumnTypeForMethod(dataTypes[idx]).toUpperCase(),
+      ]);
 
-      // TODO: Change VARCHAR(255) to the correct type. We prolly need to map the JSON Schema types to SQL types.
       await this.db.execute(
         sql.raw(`
           CREATE TABLE ${tableName} (
-            ${columns.map((column) => `${column} VARCHAR(255)`).join(', ')}
+            ${zipped.map(([column, type]) => `${column} ${type}`).join(', ')}
           );
         `)
       );
@@ -162,6 +171,58 @@ export default class SchemasService {
           DROP TABLE ${tableName};
         `)
       );
+    }
+  }
+
+  private validateSchemaColumns(schema: CreateBody['data']) {
+    const resources = Object.keys(schema);
+    for (const resource of resources) {
+      Object.values(schema[resource].columns).forEach((column) =>
+        getColumnTypeForMethod(column)
+      );
+    }
+  }
+
+  // TODO: Refactor you must. Far too ugly this is. Error handling you must add.
+  private async seedSchemaTables(
+    schema: typeof schemasTable.$inferSelect,
+    data: CreateBody['data']
+  ) {
+    const tableNamePrefix = `schema_${schema.project_id}_${schema.id}`;
+    const resources = Object.keys(data);
+
+    for await (const resource of resources) {
+      const tableName = `${tableNamePrefix}_${resource}`;
+      const rows: string[] = [];
+
+      for (let i = 0; i < data[resource].initialCount; i++) {
+        const values = Object.values(data[resource].columns)
+          .map((column) => {
+            const value = callFakerMethod(column);
+            if (typeof value === 'string') {
+              if (value.includes("'")) {
+                return `'${value.replace(/'/g, "''")}'`;
+              }
+
+              return `'${value}'`;
+            }
+
+            return value;
+          })
+          .join(', ');
+
+        rows.push(`(${values})`);
+      }
+
+      const insertStatement = sql.raw(`
+        INSERT INTO ${tableName} (
+          ${Object.keys(data[resource].columns).join(', ')}
+        ) VALUES (
+          ${rows.join(', ')}
+        );
+      `);
+
+      await this.db.execute(insertStatement);
     }
   }
 }
