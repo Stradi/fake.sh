@@ -7,8 +7,18 @@ import ensureProjectMiddleware from './middlewares/ensure-project-middleware';
 import ensureResourceMiddleware from './middlewares/ensure-resource-middleware';
 import ensureSchemaVersionMiddleware from './middlewares/ensure-schema-version-middleware';
 import ensureValidRequestMiddleware from './middlewares/ensure-valid-request-middleware';
+import TenantService from './tenant-service';
+
+export type HandlerPayload = {
+  requestInfo: RequestInfo;
+  project: unknown;
+  schemaVersion: number;
+  schema: unknown;
+};
 
 export default class TenantController extends BaseController {
+  private service = new TenantService();
+
   public router() {
     return this._app.all(
       '*',
@@ -28,19 +38,29 @@ export default class TenantController extends BaseController {
     const schemaVersion = ctx.get('schemaVersion' as never);
     const schema = ctx.get('schema' as never);
 
+    const handlerPayload: HandlerPayload = {
+      requestInfo,
+      project,
+      schemaVersion,
+      schema,
+    };
+
     switch (method) {
       case 'GET':
         if (requestInfo.identifier) {
-          return this.getSingleResource(ctx, requestInfo);
+          return this.show(ctx, handlerPayload);
         }
-        return this.getAllResources(ctx, requestInfo);
-      case 'POST':
-        return this.createResource(ctx, requestInfo);
+        return this.index(ctx, handlerPayload);
+      case 'POST': {
+        return this.create(ctx, handlerPayload);
+      }
       case 'PUT':
-      case 'PATCH':
-        return this.updateResource(ctx, requestInfo);
-      case 'DELETE':
-        return this.deleteResource(ctx, requestInfo);
+      case 'PATCH': {
+        return this.update(ctx, handlerPayload);
+      }
+      case 'DELETE': {
+        return this.destroy(ctx, handlerPayload);
+      }
       default:
         // This shouldn't happen but just in case
         throw new BaseError({
@@ -51,49 +71,45 @@ export default class TenantController extends BaseController {
     }
   };
 
-  private getSingleResource = async (ctx: Context, payload: RequestInfo) => {
+  private async index(ctx: Context, payload: HandlerPayload) {
+    const resources = await this.service.index(payload);
+
+    return this.ok(ctx, {
+      message: `Successfully fetched ${resources.length} resources`,
+      payload: resources,
+    });
+  }
+
+  private async show(ctx: Context, payload: HandlerPayload) {
+    const resource = await this.service.show(payload);
+
     return this.ok(ctx, {
       message: 'Successfully fetched the resource',
-      payload: {
-        id: payload.identifier,
-        tenant: ctx.get('tenant'),
-      },
+      payload: resource,
     });
-  };
+  }
 
-  private getAllResources = (ctx: Context, _payload: RequestInfo) => {
-    return this.ok(ctx, {
-      message: 'Successfully fetched 25 resources',
-      payload: new Array(25).fill({
-        some: 'thing',
-      }),
+  private create(ctx: Context, _payload: HandlerPayload) {
+    return this.notAllowed(ctx, {
+      message: 'Not implemented',
+      code: 'NOT_IMPLEMENTED',
+      action: 'Use a different method',
     });
-  };
+  }
 
-  private createResource = (ctx: Context, _payload: RequestInfo) => {
-    return this.created(ctx, {
-      message: 'Successfully created a resource',
-      payload: {
-        some: 'thing',
-      },
+  private update(ctx: Context, _payload: HandlerPayload) {
+    return this.notAllowed(ctx, {
+      message: 'Not implemented',
+      code: 'NOT_IMPLEMENTED',
+      action: 'Use a different method',
     });
-  };
+  }
 
-  private updateResource = (ctx: Context, payload: RequestInfo) => {
-    return this.ok(ctx, {
-      message: 'Successfully updated the resource',
-      payload: {
-        id: payload.identifier,
-      },
+  private destroy(ctx: Context, _payload: HandlerPayload) {
+    return this.notAllowed(ctx, {
+      message: 'Not implemented',
+      code: 'NOT_IMPLEMENTED',
+      action: 'Use a different method',
     });
-  };
-
-  private deleteResource = (ctx: Context, payload: RequestInfo) => {
-    return this.ok(ctx, {
-      message: 'Successfully deleted the resource',
-      payload: {
-        id: payload.identifier,
-      },
-    });
-  };
+  }
 }
