@@ -4,8 +4,8 @@ import {
   generateId,
 } from '@fake.sh/backend-common';
 import { getDb } from '@lib/database';
-import { callFakerMethod, getColumnTypeForMethod } from '@utils/faker';
 import type { JwtClaims } from '@utils/jwt';
+import { generateData, getCreateTableSql, getInsertSql } from '@utils/schema';
 import { and, eq, sql } from 'drizzle-orm';
 import type {
   CreateBody,
@@ -73,7 +73,7 @@ export default class SchemasService {
       });
     }
 
-    this.validateSchemaColumns(data.data);
+    // this.validateSchema(data.data);
 
     const record = await this.db
       .insert(schemasTable)
@@ -139,20 +139,12 @@ export default class SchemasService {
 
     for await (const resource of resources) {
       const tableName = `${tableNamePrefix}_${resource}`;
-      const columns = Object.keys(body.data[resource].columns);
-      const dataTypes = Object.values(body.data[resource].columns);
-      const zipped = columns.map((column, idx) => [
-        column,
-        getColumnTypeForMethod(dataTypes[idx]).toUpperCase(),
-      ]);
-
-      await this.db.execute(
-        sql.raw(`
-          CREATE TABLE ${tableName} (
-            ${zipped.map(([column, type]) => `${column} ${type}`).join(', ')}
-          );
-        `)
+      const sqlStatement = getCreateTableSql(
+        tableName,
+        body.data[resource].columns
       );
+
+      await this.db.execute(sql.raw(sqlStatement));
     }
   }
 
@@ -174,16 +166,6 @@ export default class SchemasService {
     }
   }
 
-  private validateSchemaColumns(schema: CreateBody['data']) {
-    const resources = Object.keys(schema);
-    for (const resource of resources) {
-      Object.values(schema[resource].columns).forEach((column) =>
-        getColumnTypeForMethod(column)
-      );
-    }
-  }
-
-  // TODO: Refactor you must. Far too ugly this is. Error handling you must add.
   private async seedSchemaTables(
     schema: typeof schemasTable.$inferSelect,
     data: CreateBody['data']
@@ -193,36 +175,18 @@ export default class SchemasService {
 
     for await (const resource of resources) {
       const tableName = `${tableNamePrefix}_${resource}`;
-      const rows: string[] = [];
+      const rows: { names: string; values: string }[] = [];
 
       for (let i = 0; i < data[resource].initialCount; i++) {
-        const values = Object.values(data[resource].columns)
-          .map((column) => {
-            const value = callFakerMethod(column);
-            if (typeof value === 'string') {
-              if (value.includes("'")) {
-                return `'${value.replace(/'/g, "''")}'`;
-              }
-
-              return `'${value}'`;
-            }
-
-            return value;
-          })
-          .join(', ');
-
-        rows.push(`(${values})`);
+        rows.push(getInsertSql(generateData(data[resource].columns)));
       }
 
-      const insertStatement = sql.raw(`
-        INSERT INTO ${tableName} (
-          ${Object.keys(data[resource].columns).join(', ')}
-        ) VALUES (
-          ${rows.join(', ')}
-        );
-      `);
+      const sqlStatement = `
+        INSERT INTO ${tableName} (${rows[0].names})
+          VALUES ${rows.map((r) => `(${r.values})`).join(', ')}
+      ;`;
 
-      await this.db.execute(insertStatement);
+      await this.db.execute(sql.raw(sqlStatement));
     }
   }
 }

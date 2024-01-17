@@ -21,7 +21,7 @@ export const CreateBody = z.object({
   data: z.record(
     z.object({
       initialCount: z.number().positive(),
-      columns: z.record(z.string()),
+      columns: z.record(z.any()),
     })
   ),
 });
@@ -32,7 +32,7 @@ export const UpdateBody = z.object({
   data: z.record(
     z.object({
       initialCount: z.number().positive(),
-      columns: z.record(z.string()),
+      columns: z.record(z.any()),
     })
   ),
 });
