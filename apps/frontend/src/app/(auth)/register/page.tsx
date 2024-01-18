@@ -1,3 +1,10 @@
+import RegisterForm from '@components/register-form';
+
 export default function Page() {
-  return <div>Register Page</div>;
+  return (
+    <>
+      <h1 className="text-center text-xl font-medium">Create New Account</h1>
+      <RegisterForm className="w-full max-w-sm p-4" />
+    </>
+  );
 }
