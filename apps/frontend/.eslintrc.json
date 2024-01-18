@@ -1,0 +1,23 @@
+{
+  "extends": ["eslint-config-fakesh/next"],
+  "rules": {
+    // disabling this rule because import rule is not working properly on monorepos
+    "import/no-extraneous-dependencies": "off",
+
+    // typescript can infer return type really well
+    "@typescript-eslint/explicit-function-return-type": "off",
+
+    // i prefer to use type instead of interface
+    "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+
+    // i don't know why but these rules are not working properly (or i can't use them properly)
+    "@typescript-eslint/no-unsafe-argument": "off",
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/no-unsafe-call": "off",
+    "@typescript-eslint/no-unsafe-declaration-merging": "off",
+    "@typescript-eslint/no-unsafe-enum-comparison": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
+    "@typescript-eslint/no-unsafe-return": "off",
+    "@typescript-eslint/no-unsafe-unary-minus": "off"
+  }
+}
