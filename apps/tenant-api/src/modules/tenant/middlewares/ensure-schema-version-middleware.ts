@@ -17,8 +17,14 @@ export default function ensureSchemaVersionMiddleware(): MiddlewareHandler {
     }
 
     const project = ctx.get('project');
-    const rows =
-      await db`SELECT id FROM schemas WHERE project_id = ${project.id} AND version = ${versionNumber} LIMIT 1`;
+    const rows = await db
+      .select()
+      .from('schemas')
+      .where({
+        project_id: project.id,
+        version: versionNumber,
+      })
+      .limit(1);
 
     if (rows.length === 0) {
       throw new BaseError({

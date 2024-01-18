@@ -24,8 +24,10 @@ export default function ensureProjectMiddleware(): MiddlewareHandler {
     }
 
     const [projectSlug] = parts;
-    const rows =
-      await db`SELECT * FROM projects WHERE slug = ${projectSlug} LIMIT 1`;
+    const rows = await db
+      .select()
+      .from('projects')
+      .where({ slug: projectSlug });
 
     if (rows.length === 0) {
       throw new BaseError({

@@ -8,8 +8,15 @@ export default function ensureResourceMiddleware(): MiddlewareHandler {
     const project = ctx.get('project');
     const schemaVersion = ctx.get('schemaVersion');
 
-    const rows =
-      await db`SELECT * FROM schemas WHERE project_id = ${project.id} AND version = ${schemaVersion} LIMIT 1`;
+    //`SELECT * FROM schemas WHERE project_id = ${project.id} AND version = ${schemaVersion} LIMIT 1`;
+    const rows = await db
+      .select()
+      .from('schemas')
+      .where({
+        project_id: project.id,
+        version: schemaVersion,
+      })
+      .limit(1);
     const schema = rows[0];
 
     let parsedSchema: null | object = null;

@@ -7,6 +7,7 @@ import ensureProjectMiddleware from './middlewares/ensure-project-middleware';
 import ensureResourceMiddleware from './middlewares/ensure-resource-middleware';
 import ensureSchemaVersionMiddleware from './middlewares/ensure-schema-version-middleware';
 import ensureValidRequestMiddleware from './middlewares/ensure-valid-request-middleware';
+import { IndexQuery } from './tenant-dto';
 import TenantService from './tenant-service';
 
 export type HandlerPayload = {
@@ -72,7 +73,8 @@ export default class TenantController extends BaseController {
   };
 
   private async index(ctx: Context, payload: HandlerPayload) {
-    const resources = await this.service.index(payload);
+    const q = this.validateQuery(ctx, IndexQuery);
+    const resources = await this.service.index(payload, q);
 
     return this.ok(ctx, {
       message: `Successfully fetched ${resources.length} resources`,
@@ -89,27 +91,59 @@ export default class TenantController extends BaseController {
     });
   }
 
-  private create(ctx: Context, _payload: HandlerPayload) {
-    return this.notAllowed(ctx, {
-      message: 'Not implemented',
-      code: 'NOT_IMPLEMENTED',
-      action: 'Use a different method',
+  private async create(ctx: Context, payload: HandlerPayload) {
+    const tableDescription = await this.service.getTableDescription(payload);
+    const body = await this.validateBody(
+      ctx,
+      this.service.getZodSchema(
+        tableDescription.map((row) => ({
+          ...row,
+          isOptional: false,
+        }))
+      )
+    );
+
+    const record = await this.service.create(payload, body);
+
+    return this.created(ctx, {
+      message: 'Successfully created the resource',
+      payload: record,
     });
   }
 
-  private update(ctx: Context, _payload: HandlerPayload) {
-    return this.notAllowed(ctx, {
-      message: 'Not implemented',
-      code: 'NOT_IMPLEMENTED',
-      action: 'Use a different method',
+  private async update(ctx: Context, payload: HandlerPayload) {
+    const tableDescription = await this.service.getTableDescription(payload);
+    const body = await this.validateBody(
+      ctx,
+      this.service.getZodSchema(
+        tableDescription.map((row) => ({
+          ...row,
+          isOptional: true,
+        }))
+      )
+    );
+
+    if (Object.keys(body).length === 0) {
+      return this.ok(ctx, {
+        message: 'No changes were made',
+        payload: {},
+      });
+    }
+
+    const record = await this.service.update(payload, body);
+
+    return this.ok(ctx, {
+      message: 'Successfully updated the resource',
+      payload: record,
     });
   }
 
-  private destroy(ctx: Context, _payload: HandlerPayload) {
-    return this.notAllowed(ctx, {
-      message: 'Not implemented',
-      code: 'NOT_IMPLEMENTED',
-      action: 'Use a different method',
+  private async destroy(ctx: Context, payload: HandlerPayload) {
+    const record = await this.service.destroy(payload);
+
+    return this.ok(ctx, {
+      message: 'Successfully deleted the resource',
+      payload: record,
     });
   }
 }

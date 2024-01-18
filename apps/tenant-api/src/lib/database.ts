@@ -1,5 +1,11 @@
 import { env } from '@fake.sh/backend-common';
-import postgres from 'postgres';
+import knex from 'knex';
 
-const db = postgres(env('PG_CONNECTION_STRING', ''));
+const db = knex({
+  client: 'pg',
+  connection: {
+    connectionString: env('PG_CONNECTION_STRING', ''),
+  },
+});
+
 export default db;
