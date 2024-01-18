@@ -18,7 +18,9 @@
     "pino-pretty": "^10.3.1"
   },
   "dependencies": {
+    "@faker-js/faker": "^8.3.1",
     "hono": "^3.12.3",
+    "knex": "^3.1.0",
     "nanoid": "^5.0.4",
     "pino": "^8.17.2",
     "slugify": "^1.6.6",

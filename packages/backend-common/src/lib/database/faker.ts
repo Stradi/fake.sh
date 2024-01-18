@@ -1,5 +1,5 @@
-import { BaseError } from '@fake.sh/backend-common';
 import { faker } from '@faker-js/faker';
+import BaseError from '../../utils/errors/base-error';
 
 export function callFakerMethod(text: string) {
   const { module, method } = parseFakerSyntax(text);

@@ -1,11 +1,11 @@
 import {
   BaseError,
   ResourceNotFoundError,
+  TenantResource,
   generateId,
 } from '@fake.sh/backend-common';
 import { getDb } from '@lib/database';
 import type { JwtClaims } from '@utils/jwt';
-import { generateData, getCreateTableSql, getInsertSql } from '@utils/schema';
 import { and, eq, sql } from 'drizzle-orm';
 import type {
   CreateBody,
@@ -138,13 +138,12 @@ export default class SchemasService {
     const resources = Object.keys(body.data);
 
     for await (const resource of resources) {
-      const tableName = `${tableNamePrefix}_${resource}`;
-      const sqlStatement = getCreateTableSql(
-        tableName,
-        body.data[resource].columns
-      );
+      const tenantResource = new TenantResource({
+        tableName: `${tableNamePrefix}_${resource}`,
+        columns: body.data[resource].columns,
+      });
 
-      await this.db.execute(sql.raw(sqlStatement));
+      await this.db.execute(sql.raw(tenantResource.sql.createTable()));
     }
   }
 
@@ -157,12 +156,12 @@ export default class SchemasService {
     const resources = Object.keys(schema);
 
     for await (const resource of resources) {
-      const tableName = `${tableNamePrefix}_${resource}`;
-      await this.db.execute(
-        sql.raw(`
-          DROP TABLE ${tableName};
-        `)
-      );
+      const tenantResource = new TenantResource({
+        tableName: `${tableNamePrefix}_${resource}`,
+        columns: schema[resource].columns,
+      });
+
+      await this.db.execute(sql.raw(tenantResource.sql.dropTable()));
     }
   }
 
@@ -174,19 +173,16 @@ export default class SchemasService {
     const resources = Object.keys(data);
 
     for await (const resource of resources) {
-      const tableName = `${tableNamePrefix}_${resource}`;
-      const rows: { names: string; values: string }[] = [];
+      const tenantResource = new TenantResource({
+        tableName: `${tableNamePrefix}_${resource}`,
+        columns: data[resource].columns,
+      });
 
-      for (let i = 0; i < data[resource].initialCount; i++) {
-        rows.push(getInsertSql(generateData(data[resource].columns)));
-      }
+      const arr = new Array(data[resource].initialCount).fill(
+        tenantResource.generateRowData()
+      );
 
-      const sqlStatement = `
-        INSERT INTO ${tableName} (${rows[0].names})
-          VALUES ${rows.map((r) => `(${r.values})`).join(', ')}
-      ;`;
-
-      await this.db.execute(sql.raw(sqlStatement));
+      await this.db.execute(sql.raw(tenantResource.sql.insert(arr)));
     }
   }
 }
