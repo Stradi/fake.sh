@@ -4,6 +4,9 @@ services:
       context: .
       dockerfile: ./apps/tenant-api/Dockerfile
     restart: always
+    environment:
+      - PG_CONNECTION_STRING=postgres://postgres:postgres@postgres-db:5432
+      - PORT=3000
     ports:
       - 3000:3000
     networks:
@@ -21,6 +24,7 @@ services:
       - ADMIN_EMAIL=admin@localhost.com
       - ADMIN_PASSWORD=admin123
       - JWT_SECRET=secret
+      - PORT=3001
     ports:
       - 3001:3001
     networks:
