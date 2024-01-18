@@ -1,5 +1,5 @@
 {
-  "extends": ["eslint-config-fakesh/next"],
+  "extends": ["eslint-config-fakesh/next", "plugin:tailwindcss/recommended"],
   "rules": {
     // disabling this rule because import rule is not working properly on monorepos
     "import/no-extraneous-dependencies": "off",
@@ -19,5 +19,10 @@
     "@typescript-eslint/no-unsafe-member-access": "off",
     "@typescript-eslint/no-unsafe-return": "off",
     "@typescript-eslint/no-unsafe-unary-minus": "off"
+  },
+  "settings": {
+    "tailwindcss": {
+      "callees": ["cn"]
+    }
   }
 }
