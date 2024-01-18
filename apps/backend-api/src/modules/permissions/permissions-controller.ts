@@ -1,6 +1,11 @@
 import type { Handler } from '@fake.sh/backend-common';
 import { CrudController, ResourceNotFoundError } from '@fake.sh/backend-common';
-import { CreateBody, IndexQuery, UpdateBody } from './permissions-dto';
+import {
+  CanPerformBody,
+  CreateBody,
+  IndexQuery,
+  UpdateBody,
+} from './permissions-dto';
 import PermissionsPolicy from './permissions-policy';
 import PermissionsService from './permissions-service';
 
@@ -11,6 +16,10 @@ type ApiPath<PermissionId extends boolean = false> = PermissionId extends true
 export default class PermissionsController extends CrudController {
   private readonly service = new PermissionsService();
   private readonly policy = new PermissionsPolicy();
+
+  public router() {
+    return super.router().post('/permissions/canPerform', this.canPerform);
+  }
 
   protected index: Handler<ApiPath> = async (ctx) => {
     await this.checkPolicy(this.policy, 'index', ctx.get('jwtPayload'));
@@ -89,6 +98,28 @@ export default class PermissionsController extends CrudController {
     return this.ok(ctx, {
       message: `Deleted record with id ${deletedRecord.id}`,
       payload: deletedRecord,
+    });
+  };
+
+  protected canPerform: Handler<ApiPath> = async (ctx) => {
+    const body = await this.validateBody(ctx, CanPerformBody);
+
+    let canPerform = false;
+    try {
+      await this.checkPolicy(
+        this.policy,
+        'can',
+        body.permission_name,
+        ctx.get('jwtPayload')
+      );
+      canPerform = true;
+    } catch {
+      canPerform = false;
+    }
+
+    return this.ok(ctx, {
+      message: 'Permission check successful',
+      payload: canPerform,
     });
   };
 }

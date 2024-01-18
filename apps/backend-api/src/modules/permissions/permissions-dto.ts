@@ -15,3 +15,8 @@ export const CreateBody = z.object({
   name: z.string().min(1),
 });
 export type CreateBody = z.infer<typeof CreateBody>;
+
+export const CanPerformBody = z.object({
+  permission_name: z.string(),
+});
+export type CanPerformBody = z.infer<typeof CanPerformBody>;
