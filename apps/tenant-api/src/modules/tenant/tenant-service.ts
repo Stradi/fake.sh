@@ -1,4 +1,4 @@
-import { BaseError } from '@fake.sh/backend-common';
+import { BaseError, log } from '@fake.sh/backend-common';
 import db from '@lib/database';
 import { z } from 'zod';
 import type { HandlerPayload } from './tenant-controller';
@@ -22,8 +22,22 @@ export default class TenantService {
   public async show(payload: HandlerPayload) {
     const tableName = this.getTableName(payload);
 
-    const records = await db.select().from(tableName).limit(1);
-    return this.convertRow.bind(this)(records[0]);
+    const record = await db.select('*').from(tableName).where({
+      __id: payload.requestInfo.identifier,
+    });
+
+    log.debug(record);
+
+    if (record.length === 0) {
+      throw new BaseError({
+        code: 'NOT_FOUND',
+        message: `Record not found`,
+        action: `The record with id ${payload.requestInfo.identifier} was not found`,
+        statusCode: 404,
+      });
+    }
+
+    return this.convertRow.bind(this)(record[0]);
   }
 
   public async create(
@@ -42,14 +56,36 @@ export default class TenantService {
   ) {
     const tableName = this.getTableName(payload);
 
-    const record = await db.update(data).from(tableName).returning('*');
+    const record = await db
+      .update(data)
+      .from(tableName)
+      .where({
+        __id: payload.requestInfo.identifier,
+      })
+      .returning('*');
     return record[0];
   }
 
   public async destroy(payload: HandlerPayload) {
     const tableName = this.getTableName(payload);
 
-    const record = await db.delete().from(tableName).returning('*');
+    const record = await db
+      .delete()
+      .from(tableName)
+      .where({
+        __id: payload.requestInfo.identifier,
+      })
+      .returning('*');
+
+    if (record.length === 0) {
+      throw new BaseError({
+        code: 'NOT_FOUND',
+        message: `Record not found`,
+        action: `The record with id ${payload.requestInfo.identifier} was not found`,
+        statusCode: 404,
+      });
+    }
+
     return record[0];
   }
 
@@ -114,6 +150,13 @@ export default class TenantService {
 
   private convertRow(row: Record<string, unknown>) {
     return Object.entries(row).reduce((acc, [key, value]) => {
+      if (key === '__id') {
+        return {
+          ...acc,
+          id: value,
+        };
+      }
+
       if (typeof value !== 'string')
         return {
           ...acc,

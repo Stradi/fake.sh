@@ -87,7 +87,12 @@ export default class TenantResource {
 
     return this.db.schema
       .createTable(this.tableName, (table) => {
-        const entries = Object.keys(this.columns);
+        table.increments('__id').primary();
+
+        const entries = Object.keys(this.columns).filter(
+          (key) => key !== '__id'
+        );
+
         for (const columnName of entries) {
           const dbType = getDbType(sampleRow[columnName]);
           // @ts-expect-error -- wut?

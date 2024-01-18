@@ -48,7 +48,7 @@ export default class TenantController extends BaseController {
 
     switch (method) {
       case 'GET':
-        if (requestInfo.identifier) {
+        if (requestInfo.identifier !== undefined) {
           return this.show(ctx, handlerPayload);
         }
         return this.index(ctx, handlerPayload);
