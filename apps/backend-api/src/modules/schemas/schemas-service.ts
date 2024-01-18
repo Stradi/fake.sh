@@ -178,7 +178,7 @@ export default class SchemasService {
         columns: data[resource].columns,
       });
 
-      const arr = new Array(data[resource].initialCount).fill(
+      const arr = Array.from({ length: data[resource].initialCount }, () =>
         tenantResource.generateRowData()
       );
 
