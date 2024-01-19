@@ -1,9 +1,19 @@
+import createServerComponentClient from '@lib/backend/client/create-server-component-client';
 import Link from 'next/link';
 
-export default function Page() {
+export default async function Page() {
+  const backendClient = await createServerComponentClient();
+
   return (
     <div>
-      <Link href="/login">Login</Link>
+      {!backendClient.isAuthenticated() ? (
+        <>
+          <Link href="/login">Login</Link>
+          <Link href="/register">Register</Link>
+        </>
+      ) : (
+        <Link href="/logout">Logout</Link>
+      )}
     </div>
   );
 }

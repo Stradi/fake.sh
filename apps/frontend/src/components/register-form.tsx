@@ -11,6 +11,8 @@ import {
 } from '@components/ui/form';
 import { Input } from '@components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
+import useBackendClient from '@hooks/use-backend-client';
+import { register } from '@lib/backend/auth';
 import { cn } from '@utils/tw';
 import type { ComponentPropsWithoutRef } from 'react';
 import { useForm } from 'react-hook-form';
@@ -41,21 +43,21 @@ export default function RegisterForm({ className, ...props }: Props) {
     },
   });
 
-  // const client = useClient();
+  const backendClient = useBackendClient();
 
   async function onSubmit(data: RegisterFormType) {
-    // const obj = await doRegister(client, {
-    //   email: data.email,
-    //   password: data.password,
-    // });
-    // if (!obj.success) {
-    //   form.setError("root", {
-    //     message: obj.error.message,
-    //   });
-    //   return;
-    // }
-    // // This is the way to perform a full page reload (with SSR).
-    // window.location.href = "/";
+    const obj = await register(backendClient, {
+      email: data.email,
+      password: data.password,
+    });
+    if (!obj.success) {
+      form.setError('root', {
+        message: obj.error.message,
+      });
+      return;
+    }
+    // This is the way to perform a full page reload (with SSR).
+    window.location.href = '/dashboard';
   }
 
   return (

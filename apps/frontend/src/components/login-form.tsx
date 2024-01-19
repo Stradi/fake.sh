@@ -11,6 +11,8 @@ import {
 } from '@components/ui/form';
 import { Input } from '@components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
+import useBackendClient from '@hooks/use-backend-client';
+import { login } from '@lib/backend/auth';
 import { cn } from '@utils/tw';
 import type { ComponentPropsWithoutRef } from 'react';
 import { useForm } from 'react-hook-form';
@@ -34,17 +36,17 @@ export default function LoginForm({ className, ...props }: Props) {
     },
   });
 
-  // const backendClient = useBackendClient();
+  const backendClient = useBackendClient();
 
   async function onSubmit(data: LoginFormType) {
-    // const obj = await login(backendClient, data);
-    // if (!obj.success) {
-    //   form.setError('root', {
-    //     message: obj.error.message,
-    //   });
-    //   return;
-    // }
-    // window.location.href = '/';
+    const obj = await login(backendClient, data);
+    if (!obj.success) {
+      form.setError('root', {
+        message: obj.error.message,
+      });
+      return;
+    }
+    window.location.href = '/dashboard';
   }
 
   return (
