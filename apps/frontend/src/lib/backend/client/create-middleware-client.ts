@@ -8,7 +8,7 @@ export default async function createMiddlewareClient(
   const cookieStr = request.headers.get('Cookie') ?? '';
 
   const client = new BackendClient();
-  client.loadFromCookies(cookieStr, '__bforum');
+  client.loadFromCookies(cookieStr, '__fakesh');
 
   if (!client.isTokenValid()) {
     client.clearToken();
@@ -16,6 +16,6 @@ export default async function createMiddlewareClient(
     await client.refreshToken();
   }
 
-  response.headers.append('Set-Cookie', client.exportToCookie('__bforum'));
+  response.headers.append('Set-Cookie', client.exportToCookie('__fakesh'));
   return client;
 }

@@ -24,7 +24,7 @@ export type ApiResponse<Data = unknown, AdditionalData = unknown> =
   | ErrorResponse<AdditionalData>;
 
 export default class BackendClient {
-  private baseUrl = 'http://localhost:3000';
+  private baseUrl = 'http://localhost:3001';
   private authToken: string | null;
 
   public isAuthenticated() {
@@ -80,7 +80,7 @@ export default class BackendClient {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        token: this.authToken,
+        refresh_token: this.authToken,
       }),
     });
 
@@ -134,7 +134,7 @@ export default class BackendClient {
       ...options,
       headers: {
         ...options?.headers,
-        cookie: this.exportToCookie('__bforum'),
+        cookie: this.exportToCookie('__fakesh'),
       },
       credentials: 'include',
     });
