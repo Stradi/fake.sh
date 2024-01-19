@@ -39,13 +39,18 @@ export default function authMiddleware(require = false): MiddlewareHandler {
     }
 
     const authToken = cookiePayload.token;
-    if (!authToken && require) {
-      throw new BaseError({
-        statusCode: 401,
-        code: 'NO_AUTH_TOKEN',
-        message: 'No auth token found in cookie',
-        action: 'Provide a valid auth token in the cookie',
-      });
+    if (!authToken) {
+      if (require) {
+        throw new BaseError({
+          statusCode: 401,
+          code: 'NO_AUTH_TOKEN',
+          message: 'No auth token found in cookie',
+          action: 'Provide a valid auth token in the cookie',
+        });
+      }
+
+      await next();
+      return;
     }
 
     const jwtPayload = await extractJwtPayload(authToken);
