@@ -8,7 +8,7 @@ export default function middleware(req: NextRequest, event: NextFetchEvent) {
     backendClientMiddleware(),
     protectMiddleware({
       whenVisited: ['/register', '/login'],
-      redirectTo: '/',
+      redirectTo: '/dashboard',
       redirectIfAuthenticated: true,
     }),
     protectMiddleware({
