@@ -1,5 +1,6 @@
 import {
   beNiceMiddleware,
+  env,
   errorMiddleware,
   log,
   loggerMiddleware,
@@ -13,6 +14,7 @@ import PermissionsController from '@modules/permissions/permissions-controller';
 import ProjectsController from '@modules/projects/projects-controller';
 import SchemasController from '@modules/schemas/schemas-controller';
 import { Hono } from 'hono';
+import { cors } from 'hono/cors';
 
 let requestsServed = 0;
 
@@ -27,6 +29,10 @@ export function getServer() {
       requestsServed++;
       await next();
     },
+    cors({
+      credentials: true,
+      origin: [env('FRONTEND_URL', 'http://localhost:3000')],
+    }),
     loggerMiddleware(),
     beNiceMiddleware(),
     authMiddleware()
