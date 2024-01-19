@@ -71,9 +71,7 @@ export default class BackendClient {
 
   async refreshToken() {
     const newToken = await this.sendRequest<{
-      payload: {
-        token: string;
-      };
+      payload: string;
     }>('/api/v1/auth/refresh-token', {
       method: 'POST',
       headers: {
@@ -85,7 +83,7 @@ export default class BackendClient {
     });
 
     if (newToken.success) {
-      this.authToken = newToken.data.payload.token;
+      this.authToken = newToken.data.payload;
     } else {
       this.clearToken();
     }
