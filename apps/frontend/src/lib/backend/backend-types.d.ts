@@ -33,3 +33,20 @@ export type ApiGroupPermission = {
   group: ApiGroup;
   permission: ApiPermission;
 };
+
+export type ApiProject = BaseApiObject & {
+  name: string;
+  slug: string;
+  createdBy: string;
+  owner: ApiAccount;
+  schemas: ApiSchema[];
+};
+
+export type ApiSchema = BaseApiObject & {
+  version: number;
+  data: unknown;
+  project_id: string;
+  created_by: string;
+  project: ApiProject;
+  owner: ApiAccount;
+};
