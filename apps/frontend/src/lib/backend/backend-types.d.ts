@@ -1,5 +1,5 @@
 type BaseApiObject = {
-  id: number;
+  id: string;
   created_at: number;
   updated_at: number;
 };
@@ -16,8 +16,8 @@ export type ApiGroup = BaseApiObject & {
 };
 
 export type ApiAccountGroup = {
-  account_id: number;
-  group_id: number;
+  account_id: string;
+  group_id: string;
   account: ApiAccount;
   group: ApiGroup;
 };
@@ -28,8 +28,8 @@ export type ApiPermission = BaseApiObject & {
 };
 
 export type ApiGroupPermission = {
-  group_id: number;
-  permission_id: number;
+  group_id: string;
+  permission_id: string;
   group: ApiGroup;
   permission: ApiPermission;
 };
