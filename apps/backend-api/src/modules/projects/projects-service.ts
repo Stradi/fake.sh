@@ -19,7 +19,7 @@ import { projectsTable } from './projects-schema';
 export default class ProjectsService {
   private readonly db = getDb();
 
-  public async index(query: IndexQuery) {
+  public async index(query: IndexQuery, accountData: JwtClaims) {
     const records = await this.db.query.projects.findMany({
       limit: query.limit || 10,
       offset: query.page ? (query.page - 1) * (query.limit || 10) : 0,
@@ -27,6 +27,9 @@ export default class ProjectsService {
         schemas: query.with_schemas || undefined,
         owner: query.with_owner || undefined,
       },
+      where: query.own
+        ? eq(projectsTable.created_by, accountData.id)
+        : undefined,
     });
 
     return records;

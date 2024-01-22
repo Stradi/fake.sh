@@ -19,9 +19,16 @@ import { schemasTable } from './schemas-schema';
 export default class SchemasService {
   private readonly db = getDb();
 
-  public async index(projectId: string, query: IndexQuery) {
+  public async index(
+    projectId: string,
+    query: IndexQuery,
+    accountData: JwtClaims
+  ) {
     const records = await this.db.query.schemas.findMany({
-      where: eq(schemasTable.project_id, projectId),
+      where: and(
+        eq(schemasTable.project_id, projectId),
+        query.own ? eq(schemasTable.created_by, accountData.id) : undefined
+      ),
       limit: query.limit || 10,
       offset: query.page ? (query.page - 1) * (query.limit || 10) : 0,
       with: {

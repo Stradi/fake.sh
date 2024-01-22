@@ -5,6 +5,7 @@ export const IndexQuery = z.object({
   limit: z.coerce.number().positive().optional(),
   with_schemas: z.coerce.boolean().optional(),
   with_owner: z.coerce.boolean().optional(),
+  own: z.coerce.boolean().optional(),
 });
 export type IndexQuery = z.infer<typeof IndexQuery>;
 

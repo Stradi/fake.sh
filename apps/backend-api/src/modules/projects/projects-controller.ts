@@ -13,15 +13,17 @@ export default class ProjectsController extends CrudController {
   private readonly policy = new ProjectsPolicy();
 
   protected index: Handler<ApiPath> = async (ctx) => {
-    await this.checkPolicy(this.policy, 'index', ctx.get('jwtPayload'));
-
     const q = this.validateQuery(ctx, IndexQuery);
-    const records = await this.service.index(q);
+    if (!q.own) {
+      await this.checkPolicy(this.policy, 'index', ctx.get('jwtPayload'));
+    }
+
+    const records = await this.service.index(q, ctx.get('jwtPayload'));
 
     return this.ok(ctx, {
       message: `Fetched ${records.length} projects`,
       payload: records,
-    });
+    }); 
   };
 
   protected show: Handler<ApiPath<true>> = async (ctx) => {

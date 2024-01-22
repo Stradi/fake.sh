@@ -13,10 +13,16 @@ export default class SchemasController extends CrudController {
   private readonly policy = new SchemasPolicy();
 
   public index: Handler<ApiPath> = async (ctx) => {
-    await this.checkPolicy(this.policy, 'index', ctx.get('jwtPayload'));
-
     const q = this.validateQuery(ctx, IndexQuery);
-    const records = await this.service.index(ctx.req.param('projectId'), q);
+    if (!q.own) {
+      await this.checkPolicy(this.policy, 'index', ctx.get('jwtPayload'));
+    }
+
+    const records = await this.service.index(
+      ctx.req.param('projectId'),
+      q,
+      ctx.get('jwtPayload')
+    );
 
     return this.ok(ctx, {
       message: `Fetched ${
