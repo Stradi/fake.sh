@@ -3,6 +3,7 @@ import type { ApiProject } from '@lib/backend/backend-types';
 import createServerComponentClient from '@lib/backend/client/create-server-component-client';
 import Header from '../_components/header';
 import CreateProjectDialog from './_components/create-project-dialog';
+import ProjectCard from './_components/project-card';
 
 export default async function Page() {
   const backendClient = await createServerComponentClient();
@@ -22,9 +23,9 @@ export default async function Page() {
       </Header>
       <hr />
       <br />
-      <Container>
+      <Container className="grid grid-cols-4 gap-3">
         {projects.data.payload.toReversed().map((project) => (
-          <p key={project.id}>{project.name}</p>
+          <ProjectCard key={project.id} {...project} />
         ))}
       </Container>
     </div>
