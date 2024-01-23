@@ -2,7 +2,7 @@ import Container from '@components/container';
 import type { ReactNode } from 'react';
 
 type Props = {
-  subText?: string;
+  subText?: ReactNode;
   rightSide?: ReactNode;
 };
 export default function TopNavigation({ subText, rightSide }: Props) {
