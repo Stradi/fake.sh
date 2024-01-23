@@ -1,5 +1,6 @@
-import Link from 'next/link';
-import type { PropsWithChildren } from 'react';
+import { createRef, type PropsWithChildren } from 'react';
+import NavigationBar from '../_components/navigation-bar';
+import TopNavigation from '../_components/navigation-bar/top-navigation';
 
 type Props = PropsWithChildren;
 
@@ -7,8 +8,21 @@ export default function Layout({ children }: Props) {
   return (
     <section>
       <header>
-        <Link href="/dashboard">All Projects</Link> -{' '}
-        <Link href="/dashboard/settings">Settings</Link>
+        <TopNavigation rightSide="Account Popover" />
+        <NavigationBar
+          items={[
+            {
+              label: 'Overview',
+              href: '/dashboard',
+              ref: createRef<HTMLAnchorElement>(),
+            },
+            {
+              label: 'Settings',
+              href: '/dashboard/settings',
+              ref: createRef<HTMLAnchorElement>(),
+            },
+          ]}
+        />
       </header>
       <main>{children}</main>
     </section>
