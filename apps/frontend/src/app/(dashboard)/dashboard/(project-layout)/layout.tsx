@@ -1,4 +1,5 @@
 import type { PropsWithChildren } from 'react';
+import AccountPopover from '../_components/navigation-bar/account-popover';
 import TopNavigation from '../_components/navigation-bar/top-navigation';
 import NavigationBarRenderer from './_components/navigation-bar-renderer';
 
@@ -8,7 +9,7 @@ export default function Layout({ children }: Props) {
   return (
     <section>
       <header>
-        <TopNavigation rightSide="Account Popover" subText="Test Project" />
+        <TopNavigation rightSide={<AccountPopover />} subText="Test Project" />
         {/*
           We need this NavigationBarRenderer because the links in navbar are not static and depends on the current project.
           We are getting the current project from the URL. So we need to render the navbar in client side. At first glance,
