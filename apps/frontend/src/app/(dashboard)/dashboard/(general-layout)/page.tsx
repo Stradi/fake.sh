@@ -18,7 +18,7 @@ export default async function Page() {
 
   return (
     <div>
-      <Header title="My Projects">
+      <Header title={`My Projects (${projects.data.payload.length})`}>
         <CreateProjectDialog />
       </Header>
       <hr />
