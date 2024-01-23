@@ -9,6 +9,7 @@ type Props = ApiProject;
 export default function ProjectCard({
   slug,
   name,
+  schemas,
   created_at: createdAt,
 }: Props) {
   const isDateWithinHour =
@@ -42,7 +43,7 @@ export default function ProjectCard({
         </header>
         <footer className="flex items-center justify-between text-sm text-neutral-500">
           <div className="space-x-4">
-            <span>12 versions</span>
+            <span>{schemas.length} versions</span>
             <span>~450 requests/day</span>
           </div>
           <CreatedAtTooltip createdAt={new Date(createdAt)} />

@@ -10,7 +10,7 @@ export default async function Page() {
   const projects = await backendClient.sendRequest<{
     message: string;
     payload: ApiProject[];
-  }>('/api/v1/projects?own=1&limit=100');
+  }>('/api/v1/projects?own=1&limit=100&with_schemas=1');
 
   if (!projects.success) {
     throw new Error('Failed to fetch projects');
