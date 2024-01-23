@@ -8,7 +8,7 @@ type Props = {
 export default function TopNavigation({ subText, rightSide }: Props) {
   return (
     <Container>
-      <nav className="flex items-center justify-between px-4 py-2">
+      <nav className="flex items-center justify-between py-2">
         <div className="flex items-center gap-2">
           <p className="text-sm font-medium">fake.sh</p>
           {subText ? (
