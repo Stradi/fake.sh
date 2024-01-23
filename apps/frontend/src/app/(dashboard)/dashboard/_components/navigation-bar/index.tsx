@@ -64,7 +64,7 @@ export default function NavigationBar({ items }: Props) {
   }, []);
 
   return (
-    <nav className="relative border-b border-neutral-300">
+    <nav className="relative border-b">
       <Container>
         <div
           className="pointer-events-none absolute size-full rounded-md bg-neutral-200/50 transition-[left,width,opacity] duration-150"
