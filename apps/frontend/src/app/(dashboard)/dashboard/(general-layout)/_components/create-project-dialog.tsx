@@ -22,6 +22,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { CreateProjectFormType } from '@lib/backend/projects/projects-types';
 import { CreateProjectFormSchema } from '@lib/backend/projects/projects-types';
 import useProjectsApi from '@lib/backend/projects/use-projects-api';
+import { useRouter } from 'next/navigation';
 import { startTransition, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -29,6 +30,7 @@ import { toast } from 'sonner';
 export default function CreateProjectDialog() {
   const [open, setOpen] = useState(false);
 
+  const router = useRouter();
   const api = useProjectsApi();
   const form = useForm<CreateProjectFormType>({
     resolver: zodResolver(CreateProjectFormSchema),
@@ -51,8 +53,10 @@ export default function CreateProjectDialog() {
       }
 
       toast.success('Project created successfully');
-      setOpen(false);
+      router.push(`/dashboard/${response.data.payload.slug}`);
+
       form.reset();
+      setOpen(false);
     });
   }
 
