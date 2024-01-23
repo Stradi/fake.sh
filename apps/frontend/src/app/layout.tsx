@@ -1,5 +1,6 @@
 import ComposeProviders from '@components/compose-providers';
 import { ScalingDialogProvider } from '@components/scaling-dialog/scaling-dialog-provider';
+import { Toaster } from '@components/ui/sonner';
 import { cn } from '@utils/tw';
 import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
@@ -14,6 +15,7 @@ export default function RootLayout({ children, modal }: Props) {
   return (
     <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en">
       <body>
+        <Toaster />
         <ComposeProviders
           providers={[
             [ScalingDialogProvider, { bodyColor: 'bg-black', padding: 16 }],
