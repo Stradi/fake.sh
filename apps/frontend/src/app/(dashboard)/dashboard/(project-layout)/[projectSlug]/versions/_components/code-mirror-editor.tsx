@@ -43,9 +43,6 @@ const schema = {
           columns: {
             type: 'object',
             description: 'The columns of the resource',
-            additionalProperties: {
-              type: 'string',
-            },
           },
         },
       },
