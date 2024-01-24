@@ -6,7 +6,7 @@ import {
 } from '@fake.sh/backend-common';
 import { getDb } from '@lib/database';
 import type { JwtClaims } from '@utils/jwt';
-import { eq } from 'drizzle-orm';
+import { eq, or } from 'drizzle-orm';
 import pg from 'postgres';
 import type {
   CreateBody,
@@ -37,7 +37,7 @@ export default class ProjectsService {
 
   public async show(id: string, query: ShowQuery) {
     const records = await this.db.query.projects.findMany({
-      where: eq(projectsTable.id, id),
+      where: or(eq(projectsTable.id, id), eq(projectsTable.slug, id)),
       with: {
         schemas: query.with_schemas || undefined,
         owner: query.with_owner || undefined,
