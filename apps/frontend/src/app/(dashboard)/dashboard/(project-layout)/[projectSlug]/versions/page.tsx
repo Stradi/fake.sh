@@ -48,7 +48,10 @@ export default async function Page({ params: { projectSlug } }: Props) {
       <hr />
       <br />
       <Container>
-        <VersionsTable versions={schemas.data.payload} />
+        <VersionsTable
+          project={project.data.payload}
+          versions={schemas.data.payload.toReversed()}
+        />
       </Container>
     </div>
   );
