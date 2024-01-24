@@ -39,7 +39,10 @@ export default async function Page({ params: { projectSlug } }: Props) {
         title="Versions"
       >
         <CreateVersionDialog
-          defaultVersionNumber={schemas.data.payload.length + 1}
+          previousVersion={
+            schemas.data.payload[schemas.data.payload.length - 1]
+          }
+          project={project.data.payload}
         />
       </Header>
       <hr />
