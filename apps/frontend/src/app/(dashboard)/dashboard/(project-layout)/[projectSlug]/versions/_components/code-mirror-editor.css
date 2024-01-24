@@ -1,0 +1,23 @@
+.ͼ2 .cm-tooltip {
+  @apply rounded-md border-neutral-300 bg-white;
+}
+
+.ͼ1 .cm-diagnostic-error {
+  @apply m-0 text-sm border-l-2 border-red-500 p-1;
+}
+
+.cm-diagnosticSource {
+  @apply hidden;
+}
+
+.ͼ2 .cm-tooltip-section:not(:first-child) {
+  @apply border-t-neutral-300;
+}
+
+.cm6-json-schema-hover--description {
+  @apply text-sm border-l-2 border-blue-500 p-1;
+}
+
+.cm6-json-schema-hover--code {
+  @apply hidden;
+}
