@@ -2,6 +2,7 @@ import ComposeProviders from '@components/compose-providers';
 import { ScalingDialogProvider } from '@components/scaling-dialog/scaling-dialog-provider';
 import { Toaster } from '@components/ui/sonner';
 import { ProjectsApiProvider } from '@lib/backend/projects/projects-api-provider';
+import { SchemasApiProvider } from '@lib/backend/schemas/schemas-api-provider';
 import { cn } from '@utils/tw';
 import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
@@ -26,6 +27,7 @@ export default function RootLayout({ children, modal }: Props) {
                 revalidatePaths: ['/dashboard'],
               },
             ],
+            [SchemasApiProvider, {}],
           ]}
         >
           {children}
