@@ -24,6 +24,11 @@ export default function NavigationBarRenderer() {
           href: `/dashboard/${projectSlug}/usage`,
           ref: { current: null },
         },
+        {
+          label: 'Settings',
+          href: `/dashboard/${projectSlug}/settings`,
+          ref: { current: null },
+        },
       ]}
     />
   );
