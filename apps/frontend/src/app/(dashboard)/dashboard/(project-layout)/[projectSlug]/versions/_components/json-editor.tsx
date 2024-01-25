@@ -11,7 +11,7 @@ import {
   stateExtensions,
 } from 'codemirror-json-schema';
 import { useCallback, useState } from 'react';
-import './code-mirror-editor.css';
+import './json-editor.css';
 
 type Props = {
   height: string;
@@ -50,7 +50,7 @@ const schema = {
   },
 } as const;
 
-export default function CodeMirrorEditor({
+export default function JsonEditor({
   height,
   defaultValue = '',
   defaultCursorPosition = 0,

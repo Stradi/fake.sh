@@ -24,7 +24,8 @@ import { startTransition, useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import CodeMirrorEditor from './code-mirror-editor';
+import JsonEditor from './json-editor';
+import VisualEditor from './visual-editor';
 
 type Props = {
   project: ApiProject;
@@ -72,6 +73,8 @@ export default function CreateVersionDialog({
       rawJson: getDefaultValue(),
     },
   });
+
+  form.watch('rawJson');
 
   function onSubmit(formData: CreateVersionFormType) {
     try {
@@ -174,9 +177,15 @@ export default function CreateVersionDialog({
                     className="mt-0 min-h-[384px]"
                     value="json-editor"
                   >
-                    <CodeMirrorEditor
-                      defaultCursorPosition={defaultCursorPos}
-                      defaultValue={getDefaultValue().replace('<CURSOR>', '')}
+                    <JsonEditor
+                      defaultCursorPosition={
+                        form.getValues().rawJson !== getDefaultValue()
+                          ? 0
+                          : defaultCursorPos
+                      }
+                      defaultValue={form
+                        .getValues()
+                        .rawJson.replace('<CURSOR>', '')}
                       height="384px"
                       onValueChange={(value) => {
                         form.setValue('rawJson', value);
@@ -187,7 +196,7 @@ export default function CreateVersionDialog({
                     className="mt-0 min-h-[384px]"
                     value="visual-editor"
                   >
-                    Not Implemented Yet
+                    <VisualEditor height="384px" />
                   </TabsContent>
                 </Tabs>
               </ResizablePanel>
