@@ -1,3 +1,7 @@
+.ͼ1.cm-focused {
+  @apply outline-none;
+}
+
 .ͼ2 .cm-tooltip {
   @apply rounded-md border-neutral-300 bg-white;
 }

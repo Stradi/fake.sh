@@ -15,6 +15,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@components/ui/resizable';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/ui/tabs';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { ApiProject, ApiSchema } from '@lib/backend/backend-types';
 import { CreateSchemaFormSchema } from '@lib/backend/schemas/schemas-types';
@@ -156,18 +157,39 @@ export default function CreateVersionDialog({
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <ResizablePanelGroup
-              className="rounded-md border"
+              className="rounded-lg border"
               direction="horizontal"
             >
               <ResizablePanel maxSize={100} minSize={10}>
-                <CodeMirrorEditor
-                  defaultCursorPosition={defaultCursorPos}
-                  defaultValue={getDefaultValue().replace('<CURSOR>', '')}
-                  height="384px"
-                  onValueChange={(value) => {
-                    form.setValue('rawJson', value);
-                  }}
-                />
+                <Tabs>
+                  <TabsList className="w-full">
+                    <TabsTrigger className="basis-1/2" value="json-editor">
+                      JSON Editor
+                    </TabsTrigger>
+                    <TabsTrigger className="basis-1/2" value="visual-editor">
+                      Visual Editor
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent
+                    className="mt-0 min-h-[384px]"
+                    value="json-editor"
+                  >
+                    <CodeMirrorEditor
+                      defaultCursorPosition={defaultCursorPos}
+                      defaultValue={getDefaultValue().replace('<CURSOR>', '')}
+                      height="384px"
+                      onValueChange={(value) => {
+                        form.setValue('rawJson', value);
+                      }}
+                    />
+                  </TabsContent>
+                  <TabsContent
+                    className="mt-0 min-h-[384px]"
+                    value="visual-editor"
+                  >
+                    Not Implemented Yet
+                  </TabsContent>
+                </Tabs>
               </ResizablePanel>
               <ResizableHandle withHandle />
               <ResizablePanel maxSize={100} minSize={10}>
