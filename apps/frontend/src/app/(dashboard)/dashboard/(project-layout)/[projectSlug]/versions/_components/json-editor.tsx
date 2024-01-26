@@ -10,14 +10,14 @@ import {
   jsonSchemaLinter,
   stateExtensions,
 } from 'codemirror-json-schema';
-import { useCallback, useState } from 'react';
 import './json-editor.css';
 
 type Props = {
   height: string;
-  defaultValue?: string;
-  defaultCursorPosition?: number;
+
+  value?: string;
   onValueChange?: (value: string) => void;
+  cursorPosition?: number;
 };
 
 const schema = {
@@ -52,19 +52,13 @@ const schema = {
 
 export default function JsonEditor({
   height,
-  defaultValue = '',
-  defaultCursorPosition = 0,
+  value = '',
   onValueChange,
+  cursorPosition = 0,
 }: Props) {
-  const [value, setValue] = useState(defaultValue);
-
-  const onChange = useCallback(
-    (newValue) => {
-      setValue(newValue);
-      onValueChange?.(newValue);
-    },
-    [onValueChange]
-  );
+  function onChange(newValue: string) {
+    onValueChange?.(newValue);
+  }
 
   return (
     <ReactCodeMirror
@@ -89,8 +83,8 @@ export default function JsonEditor({
         view.focus();
         view.dispatch({
           selection: {
-            anchor: defaultCursorPosition,
-            head: defaultCursorPosition,
+            anchor: cursorPosition,
+            head: cursorPosition,
           },
         });
       }}

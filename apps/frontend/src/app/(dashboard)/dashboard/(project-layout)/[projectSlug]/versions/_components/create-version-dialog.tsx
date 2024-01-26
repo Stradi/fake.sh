@@ -20,7 +20,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { ApiProject, ApiSchema } from '@lib/backend/backend-types';
 import { CreateSchemaFormSchema } from '@lib/backend/schemas/schemas-types';
 import useSchemasApi from '@lib/backend/schemas/use-schemas-api';
-import { startTransition, useCallback, useState } from 'react';
+import { startTransition, useCallback, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -38,7 +38,6 @@ const CreateVersionFormSchema = z.object({
 
 type CreateVersionFormType = z.infer<typeof CreateVersionFormSchema>;
 
-// TODO: This is a mess, clean it up
 export default function CreateVersionDialog({
   project,
   previousVersion,
@@ -51,7 +50,7 @@ export default function CreateVersionDialog({
       return `{
   "version": 1,
   "data": {
-    <CURSOR>
+
   }
 }`;
     }
@@ -62,9 +61,35 @@ export default function CreateVersionDialog({
     return JSON.stringify({ version, data }, null, 2);
   }, [previousVersion]);
 
-  const defaultCursorPos = !getDefaultValue().includes('<CURSOR>')
-    ? 0
-    : getDefaultValue().indexOf('<CURSOR>');
+  function validateJson(
+    value: string
+  ):
+    | { isValid: true; errorMessage: undefined }
+    | { isValid: false; errorMessage: string } {
+    try {
+      JSON.parse(value);
+    } catch {
+      return {
+        isValid: false,
+        errorMessage: 'JSON is not parsable, please check for syntax errors',
+      };
+    }
+
+    const { success: isSchemaValid } = CreateSchemaFormSchema.safeParse(
+      JSON.parse(value)
+    );
+    if (!isSchemaValid) {
+      return {
+        isValid: false,
+        errorMessage: 'JSON does not match schema',
+      };
+    }
+
+    return {
+      isValid: true,
+      errorMessage: undefined,
+    };
+  }
 
   const form = useForm<CreateVersionFormType>({
     resolver: zodResolver(CreateVersionFormSchema),
@@ -76,23 +101,14 @@ export default function CreateVersionDialog({
 
   form.watch('rawJson');
 
+  const rawJsonValidationResult = useMemo(() => {
+    return validateJson(form.getValues().rawJson);
+  }, [form.getValues().rawJson]);
+
   function onSubmit(formData: CreateVersionFormType) {
-    try {
-      JSON.parse(formData.rawJson);
-    } catch {
+    if (!rawJsonValidationResult.isValid) {
       form.setError('root', {
-        message: 'Invalid JSON',
-      });
-      return;
-    }
-
-    const { success: isValid } = CreateSchemaFormSchema.safeParse(
-      JSON.parse(formData.rawJson)
-    );
-
-    if (!isValid) {
-      form.setError('root', {
-        message: 'JSON does not match schema',
+        message: rawJsonValidationResult.errorMessage,
       });
       return;
     }
@@ -164,8 +180,8 @@ export default function CreateVersionDialog({
               direction="horizontal"
             >
               <ResizablePanel maxSize={100} minSize={10}>
-                <Tabs>
-                  <TabsList className="w-full">
+                <Tabs defaultValue="visual-editor">
+                  <TabsList className="w-full rounded-none">
                     <TabsTrigger className="basis-1/2" value="json-editor">
                       JSON Editor
                     </TabsTrigger>
@@ -174,29 +190,32 @@ export default function CreateVersionDialog({
                     </TabsTrigger>
                   </TabsList>
                   <TabsContent
-                    className="mt-0 min-h-[384px]"
+                    className="m-0 min-h-[384px]"
                     value="json-editor"
                   >
                     <JsonEditor
-                      defaultCursorPosition={
-                        form.getValues().rawJson !== getDefaultValue()
-                          ? 0
-                          : defaultCursorPos
-                      }
-                      defaultValue={form
-                        .getValues()
-                        .rawJson.replace('<CURSOR>', '')}
                       height="384px"
                       onValueChange={(value) => {
                         form.setValue('rawJson', value);
                       }}
+                      value={form.getValues().rawJson}
                     />
                   </TabsContent>
                   <TabsContent
-                    className="mt-0 min-h-[384px]"
+                    className="m-0 min-h-[384px]"
                     value="visual-editor"
                   >
-                    <VisualEditor height="384px" />
+                    <VisualEditor
+                      height="384px"
+                      onValueChange={(value) => {
+                        form.setValue('rawJson', value);
+                      }}
+                      value={
+                        rawJsonValidationResult.isValid
+                          ? form.getValues().rawJson
+                          : undefined
+                      }
+                    />
                   </TabsContent>
                 </Tabs>
               </ResizablePanel>

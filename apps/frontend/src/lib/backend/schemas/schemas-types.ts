@@ -6,7 +6,7 @@ export const CreateSchemaFormSchema = z.object({
   version: z.number().positive(),
   data: z.record(
     z.object({
-      initialCount: z.number().positive(),
+      initialCount: z.number(),
       columns: z.record(z.any()),
     })
   ),
