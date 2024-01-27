@@ -24,6 +24,7 @@ import { startTransition, useCallback, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import GeneratedEndpoints from './generated-endpoints';
 import JsonEditor from './json-editor';
 import VisualEditor from './visual-editor';
 
@@ -221,7 +222,15 @@ export default function CreateVersionDialog({
               </ResizablePanel>
               <ResizableHandle withHandle />
               <ResizablePanel maxSize={100} minSize={10}>
-                <div className="p-4">Two</div>
+                <GeneratedEndpoints
+                  height="420px"
+                  project={project}
+                  value={
+                    rawJsonValidationResult.isValid
+                      ? form.getValues().rawJson
+                      : undefined
+                  }
+                />
               </ResizablePanel>
             </ResizablePanelGroup>
             {form.formState.errors.root ? (
