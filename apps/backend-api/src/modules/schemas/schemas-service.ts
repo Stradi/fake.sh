@@ -170,6 +170,9 @@ export default class SchemasService {
           id serial PRIMARY KEY,
           url text NOT NULL,
           method text NOT NULL,
+          status_code integer NOT NULL,
+          body text NOT NULL,
+          headers text NOT NULL,
           created_at timestamp NOT NULL DEFAULT NOW()
         );`
       )

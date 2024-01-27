@@ -46,8 +46,6 @@ export default class TenantController extends BaseController {
       schema,
     };
 
-    await this.service.insertLog(ctx, handlerPayload);
-
     switch (method) {
       case 'GET':
         if (requestInfo.identifier !== undefined) {
@@ -76,21 +74,27 @@ export default class TenantController extends BaseController {
 
   private async index(ctx: Context, payload: HandlerPayload) {
     const q = this.validateQuery(ctx, IndexQuery);
-    const resources = await this.service.index(payload, q);
+    const resources = await this.service.index(ctx, payload, q);
 
-    return this.ok(ctx, {
+    const response = await this.ok(ctx, {
       message: `Successfully fetched ${resources.length} resources`,
       payload: resources,
     });
+
+    await this.service.insertLog(ctx, response, payload);
+    return response;
   }
 
   private async show(ctx: Context, payload: HandlerPayload) {
-    const resource = await this.service.show(payload);
+    const resource = await this.service.show(ctx, payload);
 
-    return this.ok(ctx, {
+    const response = await this.ok(ctx, {
       message: 'Successfully fetched the resource',
       payload: resource,
     });
+
+    await this.service.insertLog(ctx, response, payload);
+    return response;
   }
 
   private async create(ctx: Context, payload: HandlerPayload) {
@@ -105,12 +109,15 @@ export default class TenantController extends BaseController {
       )
     );
 
-    const record = await this.service.create(payload, body);
+    const record = await this.service.create(ctx, payload, body);
 
-    return this.created(ctx, {
+    const response = await this.created(ctx, {
       message: 'Successfully created the resource',
       payload: record,
     });
+
+    await this.service.insertLog(ctx, response, payload);
+    return response;
   }
 
   private async update(ctx: Context, payload: HandlerPayload) {
@@ -132,20 +139,26 @@ export default class TenantController extends BaseController {
       });
     }
 
-    const record = await this.service.update(payload, body);
+    const record = await this.service.update(ctx, payload, body);
 
-    return this.ok(ctx, {
+    const response = await this.ok(ctx, {
       message: 'Successfully updated the resource',
       payload: record,
     });
+
+    await this.service.insertLog(ctx, response, payload);
+    return response;
   }
 
   private async destroy(ctx: Context, payload: HandlerPayload) {
-    const record = await this.service.destroy(payload);
+    const record = await this.service.destroy(ctx, payload);
 
-    return this.ok(ctx, {
+    const response = await this.ok(ctx, {
       message: 'Successfully deleted the resource',
       payload: record,
     });
+
+    await this.service.insertLog(ctx, response, payload);
+    return response;
   }
 }
