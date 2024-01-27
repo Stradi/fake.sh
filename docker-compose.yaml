@@ -25,6 +25,7 @@ services:
       - ADMIN_PASSWORD=admin123
       - JWT_SECRET=secret
       - PORT=3001
+      - FRONTEND_URL=http://localhost:3002
     ports:
       - 3001:3001
     networks:
