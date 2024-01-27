@@ -9,6 +9,7 @@ import type { JwtClaims } from '@utils/jwt';
 import { and, eq, sql } from 'drizzle-orm';
 import type {
   CreateBody,
+  GetLogsQuery,
   IndexQuery,
   ShowQuery,
   UpdateBody,
@@ -135,11 +136,19 @@ export default class SchemasService {
     return records[0];
   }
 
-  public async getLogs(projectId: string, schemaId: string) {
+  public async getLogs(
+    projectId: string,
+    schemaId: string,
+    query: GetLogsQuery
+  ) {
     const tableName = `schema_${projectId}_${schemaId}_logs`;
 
     const records = await this.db.execute(
-      sql.raw(`SELECT * FROM ${tableName} ORDER BY created_at DESC LIMIT 1000`)
+      sql.raw(
+        `SELECT * FROM ${tableName} ORDER BY created_at DESC LIMIT ${
+          query.limit || 10
+        } OFFSET ${query.page ? (query.page - 1) * (query.limit || 10) : 0};`
+      )
     );
 
     return records;

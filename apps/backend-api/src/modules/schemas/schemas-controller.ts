@@ -1,6 +1,12 @@
 import type { Handler } from '@fake.sh/backend-common';
 import { CrudController, ResourceNotFoundError } from '@fake.sh/backend-common';
-import { CreateBody, IndexQuery, ShowQuery, UpdateBody } from './schemas-dto';
+import {
+  CreateBody,
+  GetLogsQuery,
+  IndexQuery,
+  ShowQuery,
+  UpdateBody,
+} from './schemas-dto';
 import SchemasPolicy from './schemas-policy';
 import SchemasService from './schemas-service';
 
@@ -142,6 +148,8 @@ export default class SchemasController extends CrudController {
   };
 
   public getLogs: Handler<ApiPath<true>> = async (ctx) => {
+    const q = this.validateQuery(ctx, GetLogsQuery);
+
     const record = await this.service.show(
       ctx.req.param('projectId'),
       ctx.req.param('schemaId'),
@@ -160,7 +168,8 @@ export default class SchemasController extends CrudController {
 
     const logs = await this.service.getLogs(
       ctx.req.param('projectId'),
-      ctx.req.param('schemaId')
+      ctx.req.param('schemaId'),
+      q
     );
 
     return this.ok(ctx, {

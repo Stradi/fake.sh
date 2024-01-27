@@ -38,3 +38,9 @@ export const UpdateBody = z.object({
   ),
 });
 export type UpdateBody = z.infer<typeof UpdateBody>;
+
+export const GetLogsQuery = z.object({
+  page: z.coerce.number().positive().optional(),
+  limit: z.coerce.number().positive().optional(),
+});
+export type GetLogsQuery = z.infer<typeof GetLogsQuery>;
