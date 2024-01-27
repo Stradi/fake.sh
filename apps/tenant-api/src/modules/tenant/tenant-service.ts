@@ -108,10 +108,12 @@ export default class TenantService {
       .from('information_schema.columns')
       .where('table_name', tableName);
 
-    return description.map((row) => ({
-      name: row.column_name as string,
-      type: row.data_type as string,
-    }));
+    return description
+      .map((row) => ({
+        name: row.column_name as string,
+        type: row.data_type as string,
+      }))
+      .filter((row) => row.name !== '__id');
   }
 
   public getZodSchema(
