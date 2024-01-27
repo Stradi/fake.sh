@@ -50,3 +50,13 @@ export type ApiSchema = BaseApiObject & {
   project: ApiProject;
   owner: ApiAccount;
 };
+
+export type ApiSchemaLogs = {
+  id: number;
+  url: string;
+  method: string;
+  status_code: number;
+  body: unknown;
+  headers: Record<string, string>;
+  created_at: number;
+};
