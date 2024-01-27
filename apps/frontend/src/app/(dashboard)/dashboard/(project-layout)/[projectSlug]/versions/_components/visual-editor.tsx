@@ -142,7 +142,7 @@ export default function VisualEditor({ height, value, onValueChange }: Props) {
 
   return (
     <ScrollArea
-      className="bg-neutral-100 p-1"
+      className="rounded-md bg-neutral-100 p-1"
       style={{
         height,
       }}
