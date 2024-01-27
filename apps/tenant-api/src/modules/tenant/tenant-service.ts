@@ -28,20 +28,7 @@ export default class TenantService {
       __id: payload.requestInfo.identifier,
     });
 
-    // TODO: Maybe handle error cases in error middleware??
     if (record.length === 0) {
-      await this.insertLogImpl(
-        // @ts-expect-error -- will add types later
-        `schema_${payload.project.id}_${payload.schema.id}_logs`,
-        {
-          url: ctx.req.url,
-          method: ctx.req.method,
-          status_code: 404,
-          body: await getRequestBodySafe(ctx.req.raw),
-          headers: getRequestHeadersSafe(ctx.req.raw),
-        }
-      );
-
       throw new BaseError({
         code: 'NOT_FOUND',
         message: `Record not found`,
@@ -93,18 +80,6 @@ export default class TenantService {
       .returning('*');
 
     if (record.length === 0) {
-      await this.insertLogImpl(
-        // @ts-expect-error -- will add types later
-        `schema_${payload.project.id}_${payload.schema.id}_logs`,
-        {
-          url: ctx.req.url,
-          method: ctx.req.method,
-          status_code: 404,
-          body: await getRequestBodySafe(ctx.req.raw),
-          headers: getRequestHeadersSafe(ctx.req.raw),
-        }
-      );
-
       throw new BaseError({
         code: 'NOT_FOUND',
         message: `Record not found`,
@@ -162,7 +137,7 @@ export default class TenantService {
     return z.object(obj);
   }
 
-  private insertLogImpl(
+  public insertLogImpl(
     tableName: string,
     data: {
       url: string;
