@@ -112,7 +112,7 @@ export default class BaseController {
   }
 
   public async validateBody<T>(ctx: Context, schema: z.Schema<T>): Promise<T> {
-    const body = await ctx.req.json();
+    const body = await ctx.req.raw.clone().json();
     return this.validate(body, schema);
   }
 
