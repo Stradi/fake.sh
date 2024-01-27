@@ -5,6 +5,7 @@ import { DataTable } from '@components/ui/data-table';
 import type { ApiProject, ApiSchema } from '@lib/backend/backend-types';
 import type { ColumnDef } from '@tanstack/react-table';
 import Link from 'next/link';
+import SchemaLogsDialog from './schema-logs-dialog';
 
 type TableColumns = {
   project: ApiProject;
@@ -65,14 +66,17 @@ const columns: ColumnDef<TableColumns>[] = [
   },
   {
     header: 'Actions',
-    cell: () => {
+    cell: ({ row }) => {
       // TODO: Make this a dropdown
       return (
         <div className="flex items-center gap-1">
-          <Button size="sm">Edit</Button>
           <Button size="sm" variant="destructive">
             Delete
           </Button>
+          <SchemaLogsDialog
+            projectId={row.original.project.id}
+            schemaId={row.original.schema.id}
+          />
         </div>
       );
     },

@@ -1,5 +1,6 @@
-import { BaseError, log } from '@fake.sh/backend-common';
+import { BaseError } from '@fake.sh/backend-common';
 import db from '@lib/database';
+import type { Context } from 'hono';
 import { z } from 'zod';
 import type { HandlerPayload } from './tenant-controller';
 import type { IndexQuery } from './tenant-dto';
@@ -25,8 +26,6 @@ export default class TenantService {
     const record = await db.select('*').from(tableName).where({
       __id: payload.requestInfo.identifier,
     });
-
-    log.debug(record);
 
     if (record.length === 0) {
       throw new BaseError({
@@ -87,6 +86,18 @@ export default class TenantService {
     }
 
     return record[0];
+  }
+
+  public async insertLog(ctx: Context, payload: HandlerPayload) {
+    // @ts-expect-error -- will add types later
+    const tableName = `schema_${payload.project.id}_${payload.schema.id}_logs`;
+    await db
+      .insert({
+        url: ctx.req.url,
+        method: ctx.req.method,
+        created_at: new Date(),
+      })
+      .into(tableName);
   }
 
   public async getTableDescription(payload: HandlerPayload) {

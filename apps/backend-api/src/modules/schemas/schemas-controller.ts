@@ -12,6 +12,10 @@ export default class SchemasController extends CrudController {
   private readonly service = new SchemasService();
   private readonly policy = new SchemasPolicy();
 
+  public router() {
+    return super.router().get('/schemas/:schemaId/logs', this.getLogs);
+  }
+
   public index: Handler<ApiPath> = async (ctx) => {
     const q = this.validateQuery(ctx, IndexQuery);
     if (!q.own) {
@@ -134,6 +138,36 @@ export default class SchemasController extends CrudController {
         'schemaId'
       )} for project with id ${ctx.req.param('schemaId')}`,
       payload: deletedRecord,
+    });
+  };
+
+  public getLogs: Handler<ApiPath<true>> = async (ctx) => {
+    const record = await this.service.show(
+      ctx.req.param('projectId'),
+      ctx.req.param('schemaId'),
+      {}
+    );
+    if (!record) {
+      throw new ResourceNotFoundError('Schema', ctx.req.param('schemaId'));
+    }
+
+    await this.checkPolicy(
+      this.policy,
+      'getLogs',
+      record,
+      ctx.get('jwtPayload')
+    );
+
+    const logs = await this.service.getLogs(
+      ctx.req.param('projectId'),
+      ctx.req.param('schemaId')
+    );
+
+    return this.ok(ctx, {
+      message: `Fetched logs for schema with id ${ctx.req.param(
+        'schemaId'
+      )} for project with id ${ctx.req.param('schemaId')}`,
+      payload: logs,
     });
   };
 }

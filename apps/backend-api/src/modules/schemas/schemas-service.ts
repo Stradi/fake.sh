@@ -135,6 +135,16 @@ export default class SchemasService {
     return records[0];
   }
 
+  public async getLogs(projectId: string, schemaId: string) {
+    const tableName = `schema_${projectId}_${schemaId}_logs`;
+
+    const records = await this.db.execute(
+      sql.raw(`SELECT * FROM ${tableName} ORDER BY created_at DESC LIMIT 1000`)
+    );
+
+    return records;
+  }
+
   private async createSchemaTables(
     projectId: string,
     schemaId: string,
@@ -152,6 +162,18 @@ export default class SchemasService {
 
       await this.db.execute(sql.raw(tenantResource.sql.createTable()));
     }
+
+    // Logs table
+    await this.db.execute(
+      sql.raw(
+        `CREATE TABLE ${tableNamePrefix}_logs (
+          id serial PRIMARY KEY,
+          url text NOT NULL,
+          method text NOT NULL,
+          created_at timestamp NOT NULL DEFAULT NOW()
+        );`
+      )
+    );
   }
 
   private async deleteSchemaTables(

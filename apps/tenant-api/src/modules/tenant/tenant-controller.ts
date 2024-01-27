@@ -31,7 +31,7 @@ export default class TenantController extends BaseController {
     );
   }
 
-  private handleRequest: Handler<'*'> = (ctx) => {
+  private handleRequest: Handler<'*'> = async (ctx) => {
     const requestInfo = extractRequestInfo(ctx.req.path);
     const method = ctx.req.method;
 
@@ -45,6 +45,8 @@ export default class TenantController extends BaseController {
       schemaVersion,
       schema,
     };
+
+    await this.service.insertLog(ctx, handlerPayload);
 
     switch (method) {
       case 'GET':
