@@ -12,6 +12,7 @@ import type { ApiProject, ApiSchema } from '@lib/backend/backend-types';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import type { ColumnDef } from '@tanstack/react-table';
 import Link from 'next/link';
+import DeleteVersionAlertDialog from './delete-version-alert-dialog';
 import SchemaLogsDialog from './schema-logs-dialog';
 
 type TableColumns = {
@@ -90,6 +91,11 @@ const columns: ColumnDef<TableColumns>[] = [
             />
             {/* <InspectDataDialog />
             <DeleteVersionDialog /> */}
+            <DeleteVersionAlertDialog
+              projectId={row.original.project.id}
+              projectSlug={row.original.project.slug}
+              schemaId={row.original.schema.id}
+            />
           </DropdownMenuContent>
         </DropdownMenu>
       );

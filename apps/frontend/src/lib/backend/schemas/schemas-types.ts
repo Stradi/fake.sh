@@ -23,3 +23,14 @@ export type CreateSchemaApiFn = (
     payload: ApiSchema;
   }>
 >;
+
+export type DeleteSchemaApiFn = (
+  projectId: string,
+  schemaId: string,
+  revalidatePaths: string[]
+) => Promise<
+  ApiResponse<{
+    message: string;
+    payload: ApiSchema;
+  }>
+>;

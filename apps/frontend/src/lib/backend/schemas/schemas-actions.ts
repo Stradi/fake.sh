@@ -28,3 +28,26 @@ export async function createSchema(
 
   return response;
 }
+
+export async function deleteSchema(
+  projectId: string,
+  schemaId: string,
+  revalidatePaths: string[]
+) {
+  const client = await createServerActionClient();
+  const response = await client.sendRequest<{
+    message: string;
+    payload: ApiSchema;
+  }>(`/api/v1/projects/${projectId}/schemas/${schemaId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  for (const path of revalidatePaths) {
+    revalidatePath(path);
+  }
+
+  return response;
+}

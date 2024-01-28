@@ -2,11 +2,12 @@
 
 import type { PropsWithChildren } from 'react';
 import { createContext } from 'react';
-import { createSchema } from './schemas-actions';
-import type { CreateSchemaApiFn } from './schemas-types';
+import { createSchema, deleteSchema } from './schemas-actions';
+import type { CreateSchemaApiFn, DeleteSchemaApiFn } from './schemas-types';
 
 type TSchemasApiContext = {
   createSchema: CreateSchemaApiFn;
+  deleteSchema: DeleteSchemaApiFn;
 };
 
 const SchemasApiContext = createContext<TSchemasApiContext>(
@@ -20,6 +21,7 @@ function SchemasApiProvider({ children }: Props) {
     <SchemasApiContext.Provider
       value={{
         createSchema,
+        deleteSchema,
       }}
     >
       {children}
