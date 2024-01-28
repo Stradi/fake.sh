@@ -1,7 +1,6 @@
 'use client';
 
 import ScalingDialogRoot from '@components/scaling-dialog';
-import { Button } from '@components/ui/button';
 import {
   DialogContent,
   DialogDescription,
@@ -9,9 +8,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@components/ui/dialog';
+import { DropdownMenuItem } from '@components/ui/dropdown-menu';
 import { ScrollArea, ScrollBar } from '@components/ui/scroll-area';
 import useBackendClient from '@hooks/use-backend-client';
 import type { ApiSchemaLogs } from '@lib/backend/backend-types';
+import { ActivityLogIcon } from '@radix-ui/react-icons';
 import { useEffect, useState } from 'react';
 import LogsTable from './logs-table';
 
@@ -46,9 +47,13 @@ export default function SchemaLogsDialog({ projectId, schemaId }: Props) {
   return (
     <ScalingDialogRoot>
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline">
-          Logs
-        </Button>
+        <DropdownMenuItem
+          className="gap-x-2"
+          onSelect={(e) => e.preventDefault()}
+        >
+          <ActivityLogIcon />
+          View Logs
+        </DropdownMenuItem>
       </DialogTrigger>
       <DialogContent className="w-full max-w-[1000px]">
         <DialogHeader>

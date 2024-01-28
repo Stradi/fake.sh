@@ -2,7 +2,14 @@
 
 import { Button } from '@components/ui/button';
 import { DataTable } from '@components/ui/data-table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@components/ui/dropdown-menu';
 import type { ApiProject, ApiSchema } from '@lib/backend/backend-types';
+import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import type { ColumnDef } from '@tanstack/react-table';
 import Link from 'next/link';
 import SchemaLogsDialog from './schema-logs-dialog';
@@ -69,15 +76,22 @@ const columns: ColumnDef<TableColumns>[] = [
     cell: ({ row }) => {
       // TODO: Make this a dropdown
       return (
-        <div className="flex items-center gap-1">
-          <Button size="sm" variant="destructive">
-            Delete
-          </Button>
-          <SchemaLogsDialog
-            projectId={row.original.project.id}
-            schemaId={row.original.schema.id}
-          />
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="icon" variant="outline">
+              <DotsHorizontalIcon className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-52">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <SchemaLogsDialog
+              projectId={row.original.project.id}
+              schemaId={row.original.schema.id}
+            />
+            {/* <InspectDataDialog />
+            <DeleteVersionDialog /> */}
+          </DropdownMenuContent>
+        </DropdownMenu>
       );
     },
   },
