@@ -103,8 +103,8 @@ export default class TenantService {
       url: ctx.req.url,
       method: ctx.req.method,
       status_code: response.status,
-      body: await getRequestBodySafe(ctx.req.raw),
-      headers: getRequestHeadersSafe(ctx.req.raw),
+      body: await getRequestBodySafe(ctx),
+      headers: getRequestHeadersSafe(ctx),
     });
   }
 

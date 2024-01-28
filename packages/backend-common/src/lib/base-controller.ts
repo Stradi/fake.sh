@@ -114,6 +114,9 @@ export default class BaseController {
 
   public async validateBody<T>(ctx: Context, schema: z.Schema<T>): Promise<T> {
     try {
+      // NOTE: Cloning requests using ctx.req.raw.clone() doesn't clone the body.
+      // This is a known issue in Bun.
+      // https://github.com/oven-sh/bun/issues/6348
       const body = await ctx.req.json();
       return this.validate(body, schema);
     } catch (e: unknown) {

@@ -28,8 +28,8 @@ export default function errorMiddleware(): ErrorHandler {
           url: ctx.req.url,
           method: ctx.req.method,
           status_code: error.statusCode,
-          body: await getRequestBodySafe(ctx.req.raw),
-          headers: getRequestHeadersSafe(ctx.req.raw),
+          body: await getRequestBodySafe(ctx),
+          headers: getRequestHeadersSafe(ctx),
         }));
 
       log.error(error);
@@ -50,8 +50,8 @@ export default function errorMiddleware(): ErrorHandler {
         url: ctx.req.url,
         method: ctx.req.method,
         status_code: 500,
-        body: await getRequestBodySafe(ctx.req.raw),
-        headers: getRequestHeadersSafe(ctx.req.raw),
+        body: await getRequestBodySafe(ctx),
+        headers: getRequestHeadersSafe(ctx),
       }));
 
     log.fatal(error);

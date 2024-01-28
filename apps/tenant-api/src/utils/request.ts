@@ -1,11 +1,13 @@
-export async function getRequestBodySafe(req: Request): Promise<unknown> {
+import type { Context } from 'hono';
+
+export async function getRequestBodySafe(ctx: Context): Promise<unknown> {
   try {
-    return await req.clone().json();
+    return await ctx.req.json();
   } catch (e) {
     return Promise.resolve({}) as Promise<unknown>;
   }
 }
 
-export function getRequestHeadersSafe(req: Request) {
-  return Object.fromEntries(req.headers.entries());
+export function getRequestHeadersSafe(ctx: Context) {
+  return Object.fromEntries(ctx.req.raw.headers.entries());
 }
