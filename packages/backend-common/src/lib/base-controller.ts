@@ -1,6 +1,7 @@
 import type { Context, Env, Next } from 'hono';
 import { Hono } from 'hono';
 import { z } from 'zod';
+import BaseError from '../utils/errors/base-error';
 import PermissionError from '../utils/errors/permission-error';
 import ValidationError from '../utils/errors/validation-error';
 import type { ErrorResponseData, SuccessResponseData } from '../utils/response';
@@ -112,8 +113,21 @@ export default class BaseController {
   }
 
   public async validateBody<T>(ctx: Context, schema: z.Schema<T>): Promise<T> {
-    const body = await ctx.req.raw.clone().json();
-    return this.validate(body, schema);
+    try {
+      const body = await ctx.req.json();
+      return this.validate(body, schema);
+    } catch (e: unknown) {
+      if (e instanceof Error && e.name === 'SyntaxError') {
+        throw new BaseError({
+          code: 'INVALID_BODY',
+          message: 'Request body is not a valid JSON',
+          action: 'Make sure that you are sending a valid JSON',
+          statusCode: 400,
+        });
+      }
+
+      throw e;
+    }
   }
 
   public validateQuery<T>(ctx: Context, schema: z.Schema<T>): T {
