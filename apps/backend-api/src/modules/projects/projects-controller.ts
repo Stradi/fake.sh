@@ -19,7 +19,7 @@ export default class ProjectsController extends CrudController {
   private readonly policy = new ProjectsPolicy();
 
   public router() {
-    return super.router().get('/usage', this.getUsage);
+    return super.router().get('/projects/:id/usage', this.getUsage);
   }
 
   protected index: Handler<ApiPath> = async (ctx) => {
