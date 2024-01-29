@@ -40,6 +40,7 @@ export type ApiProject = BaseApiObject & {
   createdBy: string;
   owner: ApiAccount;
   schemas: ApiSchema[];
+  usage?: number;
 };
 
 export type ApiSchema = BaseApiObject & {

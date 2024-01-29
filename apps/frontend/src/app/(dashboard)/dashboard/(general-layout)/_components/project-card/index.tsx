@@ -11,6 +11,7 @@ export default function ProjectCard({
   name,
   schemas,
   created_at: createdAt,
+  usage,
 }: Props) {
   const isDateWithinHour =
     Date.now() - new Date(createdAt).getTime() < 60 * 60 * 1000;
@@ -44,7 +45,7 @@ export default function ProjectCard({
         <footer className="flex items-center justify-between text-sm text-neutral-500">
           <div className="space-x-4">
             <span>{schemas.length} versions</span>
-            <span>~450 requests/day</span>
+            <span>~{usage} requests/month</span>
           </div>
           <CreatedAtTooltip createdAt={new Date(createdAt)} />
         </footer>
