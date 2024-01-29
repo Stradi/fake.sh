@@ -50,4 +50,20 @@ export default class ProjectsPolicy extends BasePolicy {
       'created_by'
     );
   }
+
+  public getUsage(
+    project: typeof projectsTable.$inferSelect,
+    accountData?: JwtClaims
+  ) {
+    return this.canMultiple(
+      [
+        `Project.${project.id}.GetUsage`,
+        'Project.&.GetUsage',
+        'Project.*.GetUsage',
+      ],
+      accountData,
+      project,
+      'created_by'
+    );
+  }
 }

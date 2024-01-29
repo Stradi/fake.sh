@@ -5,6 +5,8 @@ export const IndexQuery = z.object({
   limit: z.coerce.number().positive().optional(),
   with_schemas: z.coerce.boolean().optional(),
   with_owner: z.coerce.boolean().optional(),
+  with_usage: z.coerce.boolean().optional(),
+  timeframe: z.enum(['hour', 'day', 'week', 'month', 'millennium']).optional(),
   own: z.coerce.boolean().optional(),
 });
 export type IndexQuery = z.infer<typeof IndexQuery>;
@@ -12,6 +14,8 @@ export type IndexQuery = z.infer<typeof IndexQuery>;
 export const ShowQuery = z.object({
   with_schemas: z.coerce.boolean().optional(),
   with_owner: z.coerce.boolean().optional(),
+  with_usage: z.coerce.boolean().optional(),
+  timeframe: z.enum(['hour', 'day', 'week', 'month', 'millennium']).optional(),
 });
 export type ShowQuery = z.infer<typeof ShowQuery>;
 
@@ -25,3 +29,8 @@ export const UpdateBody = z.object({
   slug: z.string().min(3).max(63).optional(),
 });
 export type UpdateBody = z.infer<typeof UpdateBody>;
+
+export const GetUsageQuery = z.object({
+  timeframe: z.enum(['hour', 'day', 'week', 'month', 'millennium']),
+});
+export type GetUsageQuery = z.infer<typeof GetUsageQuery>;

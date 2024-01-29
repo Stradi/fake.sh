@@ -1,6 +1,12 @@
 import type { Handler } from '@fake.sh/backend-common';
 import { CrudController, ResourceNotFoundError } from '@fake.sh/backend-common';
-import { CreateBody, IndexQuery, ShowQuery, UpdateBody } from './projects-dto';
+import {
+  CreateBody,
+  GetUsageQuery,
+  IndexQuery,
+  ShowQuery,
+  UpdateBody,
+} from './projects-dto';
 import ProjectsPolicy from './projects-policy';
 import ProjectsService from './projects-service';
 
@@ -11,6 +17,10 @@ type ApiPath<ProjectId extends boolean = false> = ProjectId extends true
 export default class ProjectsController extends CrudController {
   private readonly service = new ProjectsService();
   private readonly policy = new ProjectsPolicy();
+
+  public router() {
+    return super.router().get('/usage', this.getUsage);
+  }
 
   protected index: Handler<ApiPath> = async (ctx) => {
     const q = this.validateQuery(ctx, IndexQuery);
@@ -23,7 +33,7 @@ export default class ProjectsController extends CrudController {
     return this.ok(ctx, {
       message: `Fetched ${records.length} projects`,
       payload: records,
-    }); 
+    });
   };
 
   protected show: Handler<ApiPath<true>> = async (ctx) => {
@@ -88,6 +98,24 @@ export default class ProjectsController extends CrudController {
     return this.ok(ctx, {
       message: `Deleted record with id ${deletedRecord.id}`,
       payload: deletedRecord,
+    });
+  };
+
+  protected getUsage: Handler<ApiPath<true>> = async (ctx) => {
+    const q = this.validateQuery(ctx, GetUsageQuery);
+    const record = await this.service.show(ctx.req.param('id'), {});
+    await this.checkPolicy(
+      this.policy,
+      'getUsage',
+      record,
+      ctx.get('jwtPayload')
+    );
+
+    const usage = await this.service.getUsage(ctx.req.param('id'), q);
+
+    return this.ok(ctx, {
+      message: `Fetched usage for project with id ${ctx.req.param('id')}`,
+      payload: usage,
     });
   };
 }

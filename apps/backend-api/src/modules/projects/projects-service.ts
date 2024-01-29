@@ -5,11 +5,14 @@ import {
   slugify,
 } from '@fake.sh/backend-common';
 import { getDb } from '@lib/database';
+import { schemasTable } from '@modules/schemas/schemas-schema';
+import SchemasService from '@modules/schemas/schemas-service';
 import type { JwtClaims } from '@utils/jwt';
 import { eq, or } from 'drizzle-orm';
 import pg from 'postgres';
 import type {
   CreateBody,
+  GetUsageQuery,
   IndexQuery,
   ShowQuery,
   UpdateBody,
@@ -32,6 +35,20 @@ export default class ProjectsService {
         : undefined,
     });
 
+    if (query.with_usage) {
+      const newRecords = [];
+      for await (const record of records) {
+        // @ts-expect-error -- (GetUsageQuery + some extra fields) is basically the same as ShowQuery
+        const usage = await this.getUsage(record.id, query);
+        newRecords.push({
+          ...record,
+          usage,
+        });
+      }
+
+      return newRecords;
+    }
+
     return records;
   }
 
@@ -46,6 +63,15 @@ export default class ProjectsService {
 
     if (records.length === 0) {
       throw new ResourceNotFoundError('Project', id);
+    }
+
+    if (query.with_usage) {
+      // @ts-expect-error -- (GetUsageQuery + some extra fields) is basically the same as ShowQuery
+      const usage = await this.getUsage(records[0].id, query);
+      return {
+        ...records[0],
+        usage,
+      };
     }
 
     return records[0];
@@ -125,5 +151,27 @@ export default class ProjectsService {
       .returning();
 
     return records[0];
+  }
+
+  public async getUsage(id: string, query: GetUsageQuery) {
+    // Get all schemas and sum their usage.
+    const schemaService = new SchemasService();
+
+    const schemas = await this.db.query.schemas.findMany({
+      where: eq(schemasTable.project_id, id),
+      columns: {
+        id: true,
+      },
+    });
+
+    const schemaIds = schemas.map((s) => s.id);
+    const usageArr: number[] = [];
+
+    for await (const schemaId of schemaIds) {
+      const usage = await schemaService.getUsage(id, schemaId, query);
+      usageArr.push(Number(usage.count));
+    }
+
+    return usageArr.reduce((a, b) => a + b, 0);
   }
 }

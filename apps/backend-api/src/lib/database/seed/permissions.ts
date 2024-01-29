@@ -12,9 +12,10 @@ type Scope = string;
 type BaseActions = 'Index' | 'Show' | 'Create' | 'Update' | 'Destroy';
 
 type GeneralActions = 'CanViewAdminPanel';
+type ProjectActions = 'GetUsage';
 type SchemaActions = 'GetLogs' | 'GetUsage';
 
-type Action = BaseActions | GeneralActions | SchemaActions;
+type Action = BaseActions | GeneralActions | ProjectActions | SchemaActions;
 
 type PermissionString =
   | `General.${GeneralActions}`
@@ -33,6 +34,7 @@ const DefaultPermissionMatrix: Record<
     'Project.*.Show',
     'Project.*.Update',
     'Project.*.Destroy',
+    'Project.*.GetUsage',
     'Project.&.Update',
     'Project.&.Destroy',
 
@@ -71,6 +73,7 @@ const DefaultPermissionMatrix: Record<
     'Project.&.Show',
     'Project.&.Update',
     'Project.&.Destroy',
+    'Project.&.GetUsage',
 
     'Schema.Create',
     'Schema.&.Show',
@@ -86,6 +89,7 @@ const DefaultPermissionMatrix: Record<
     'Project.&.Show',
     'Project.&.Update',
     'Project.&.Destroy',
+    'Project.&.GetUsage',
 
     'Schema.Create',
     'Schema.&.Show',
