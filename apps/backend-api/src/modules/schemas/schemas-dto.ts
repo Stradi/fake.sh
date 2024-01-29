@@ -44,3 +44,8 @@ export const GetLogsQuery = z.object({
   limit: z.coerce.number().positive().optional(),
 });
 export type GetLogsQuery = z.infer<typeof GetLogsQuery>;
+
+export const GetUsageQuery = z.object({
+  timeframe: z.enum(['hour', 'day', 'week', 'month', 'millennium']),
+});
+export type GetUsageQuery = z.infer<typeof GetUsageQuery>;

@@ -10,6 +10,7 @@ import { and, eq, sql } from 'drizzle-orm';
 import type {
   CreateBody,
   GetLogsQuery,
+  GetUsageQuery,
   IndexQuery,
   ShowQuery,
   UpdateBody,
@@ -152,6 +153,45 @@ export default class SchemasService {
     );
 
     return records;
+  }
+
+  public async getUsage(
+    projectId: string,
+    schemaId: string,
+    query: GetUsageQuery
+  ) {
+    const tableName = `schema_${projectId}_${schemaId}_logs`;
+
+    const to = new Date();
+    const from = new Date();
+
+    switch (query.timeframe) {
+      case 'hour':
+        from.setHours(from.getHours() - 1);
+        break;
+      case 'day':
+        from.setDate(from.getDate() - 1);
+        break;
+      case 'week':
+        from.setDate(from.getDate() - 7);
+        break;
+      case 'month':
+        from.setMonth(from.getMonth() - 1);
+        break;
+      case 'millennium':
+        from.setFullYear(from.getFullYear() - 1000);
+        break;
+      default:
+        from.setHours(from.getHours() - 1);
+    }
+
+    const records = await this.db.execute(
+      sql.raw(
+        `SELECT COUNT(*) AS count FROM ${tableName} WHERE created_at BETWEEN '${from.toISOString()}' AND '${to.toISOString()}';`
+      )
+    );
+
+    return records[0];
   }
 
   private async createSchemaTables(

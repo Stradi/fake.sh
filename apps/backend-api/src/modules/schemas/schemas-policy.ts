@@ -58,4 +58,20 @@ export default class SchemasPolicy extends BasePolicy {
       'created_by'
     );
   }
+
+  public getUsage(
+    schema: typeof schemasTable.$inferSelect,
+    accountData?: JwtClaims
+  ) {
+    return this.canMultiple(
+      [
+        `Schema.${schema.id}.GetUsage`,
+        'Schema.&.GetUsage',
+        'Schema.*.GetUsage',
+      ],
+      accountData,
+      schema,
+      'created_by'
+    );
+  }
 }

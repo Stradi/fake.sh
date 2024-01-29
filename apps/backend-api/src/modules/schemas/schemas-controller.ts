@@ -1,8 +1,13 @@
 import type { Handler } from '@fake.sh/backend-common';
-import { CrudController, ResourceNotFoundError } from '@fake.sh/backend-common';
+import {
+  CrudController,
+  ResourceNotFoundError,
+  log,
+} from '@fake.sh/backend-common';
 import {
   CreateBody,
   GetLogsQuery,
+  GetUsageQuery,
   IndexQuery,
   ShowQuery,
   UpdateBody,
@@ -19,7 +24,10 @@ export default class SchemasController extends CrudController {
   private readonly policy = new SchemasPolicy();
 
   public router() {
-    return super.router().get('/schemas/:schemaId/logs', this.getLogs);
+    return super
+      .router()
+      .get('/schemas/:schemaId/logs', this.getLogs)
+      .get('/schemas/:schemaId/usage', this.getUsage);
   }
 
   public index: Handler<ApiPath> = async (ctx) => {
@@ -177,6 +185,41 @@ export default class SchemasController extends CrudController {
         'schemaId'
       )} for project with id ${ctx.req.param('schemaId')}`,
       payload: logs,
+    });
+  };
+
+  public getUsage: Handler<ApiPath<true>> = async (ctx) => {
+    const q = this.validateQuery(ctx, GetUsageQuery);
+
+    const record = await this.service.show(
+      ctx.req.param('projectId'),
+      ctx.req.param('schemaId'),
+      {}
+    );
+    if (!record) {
+      throw new ResourceNotFoundError('Schema', ctx.req.param('schemaId'));
+    }
+
+    await this.checkPolicy(
+      this.policy,
+      'getUsage',
+      record,
+      ctx.get('jwtPayload')
+    );
+
+    const usage = await this.service.getUsage(
+      ctx.req.param('projectId'),
+      ctx.req.param('schemaId'),
+      q
+    );
+
+    log.debug(usage);
+
+    return this.ok(ctx, {
+      message: `Fetched usage for schema with id ${ctx.req.param(
+        'schemaId'
+      )} for project with id ${ctx.req.param('schemaId')}`,
+      payload: usage,
     });
   };
 }
