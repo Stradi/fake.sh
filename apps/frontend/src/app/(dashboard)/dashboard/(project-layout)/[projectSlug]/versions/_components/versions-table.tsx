@@ -14,6 +14,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import Link from 'next/link';
 import DeleteVersionAlertDialog from './delete-version-alert-dialog';
 import SchemaLogsDialog from './schema-logs-dialog';
+import UsageWidget from './usage-widget';
 
 type TableColumns = {
   project: ApiProject;
@@ -45,30 +46,19 @@ const columns: ColumnDef<TableColumns>[] = [
   {
     header: 'Usage',
     cell: ({ row }) => {
-      // TODO: Obviously this is not the real usage, but it's a cool placeholder
-      // that avoids hydration errors :D
-      const randomWidths = [
-        '20%',
-        '50%',
-        '100%',
-        '30%',
-        '90%',
-        '80%',
-        '40%',
-        '60%',
-        '10%',
-        '70%',
-      ];
-      const randomWidth = randomWidths[(69 * row.index) % randomWidths.length];
-
       return (
-        <div
-          className="relative h-4 min-w-60 rounded-md bg-neutral-200 before:absolute before:left-0 before:top-0 before:h-4 before:w-[var(--width)] before:rounded-md before:bg-neutral-300"
-          style={{
-            // @ts-expect-error -- temporary
-            '--width': randomWidth,
-          }}
-        />
+        <div className="flex gap-2">
+          <UsageWidget
+            projectId={row.original.project.id}
+            schemaId={row.original.schema.id}
+            timeframe="day"
+          />
+          <UsageWidget
+            projectId={row.original.project.id}
+            schemaId={row.original.schema.id}
+            timeframe="month"
+          />
+        </div>
       );
     },
   },
@@ -89,8 +79,6 @@ const columns: ColumnDef<TableColumns>[] = [
               projectId={row.original.project.id}
               schemaId={row.original.schema.id}
             />
-            {/* <InspectDataDialog />
-            <DeleteVersionDialog /> */}
             <DeleteVersionAlertDialog
               projectId={row.original.project.id}
               projectSlug={row.original.project.slug}
