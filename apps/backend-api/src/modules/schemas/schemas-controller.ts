@@ -1,9 +1,5 @@
 import type { Handler } from '@fake.sh/backend-common';
-import {
-  CrudController,
-  ResourceNotFoundError,
-  log,
-} from '@fake.sh/backend-common';
+import { CrudController, ResourceNotFoundError } from '@fake.sh/backend-common';
 import {
   CreateBody,
   GetLogsQuery,
@@ -212,8 +208,6 @@ export default class SchemasController extends CrudController {
       ctx.req.param('schemaId'),
       q
     );
-
-    log.debug(usage);
 
     return this.ok(ctx, {
       message: `Fetched usage for schema with id ${ctx.req.param(
