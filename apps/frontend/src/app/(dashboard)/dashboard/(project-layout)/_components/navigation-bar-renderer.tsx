@@ -20,13 +20,8 @@ export default function NavigationBarRenderer() {
           ref: { current: null },
         },
         {
-          label: 'Usage',
-          href: `/dashboard/${projectSlug}/usage`,
-          ref: { current: null },
-        },
-        {
           label: 'Settings',
-          href: `/dashboard/${projectSlug}/settings`,
+          href: `/dashboard/settings`,
           ref: { current: null },
         },
       ]}
