@@ -163,6 +163,8 @@ export default class SchemasService {
     const tableName = `schema_${projectId}_${schemaId}_logs`;
 
     const to = new Date();
+    to.setFullYear(to.getFullYear() + 1000);
+
     const from = new Date();
 
     switch (query.timeframe) {
