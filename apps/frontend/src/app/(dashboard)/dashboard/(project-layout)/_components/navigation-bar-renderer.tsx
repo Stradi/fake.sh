@@ -19,11 +19,6 @@ export default function NavigationBarRenderer() {
           href: `/dashboard/${projectSlug}/versions`,
           ref: { current: null },
         },
-        {
-          label: 'Settings',
-          href: `/dashboard/settings`,
-          ref: { current: null },
-        },
       ]}
     />
   );
