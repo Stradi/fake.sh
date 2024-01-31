@@ -19,7 +19,10 @@ export default class ProjectsController extends CrudController {
   private readonly policy = new ProjectsPolicy();
 
   public router() {
-    return super.router().get('/projects/:id/usage', this.getUsage);
+    return super
+      .router()
+      .get('/projects/:id/usage', this.getUsage)
+      .delete('/projects/:id/versions', this.deleteAllVersions);
   }
 
   protected index: Handler<ApiPath> = async (ctx) => {
@@ -116,6 +119,27 @@ export default class ProjectsController extends CrudController {
     return this.ok(ctx, {
       message: `Fetched usage for project with id ${ctx.req.param('id')}`,
       payload: usage,
+    });
+  };
+
+  protected deleteAllVersions: Handler<ApiPath<true>> = async (ctx) => {
+    const record = await this.service.show(ctx.req.param('id'), {});
+    await this.checkPolicy(
+      this.policy,
+      'deleteAllVersions',
+      record,
+      ctx.get('jwtPayload')
+    );
+
+    const deletedVersions = await this.service.deleteAllVersions(
+      ctx.req.param('id')
+    );
+
+    return this.ok(ctx, {
+      message: `Deleted ${
+        deletedVersions.length
+      } versions for project with id ${ctx.req.param('id')}`,
+      payload: deletedVersions,
     });
   };
 }

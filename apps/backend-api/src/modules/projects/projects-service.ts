@@ -174,4 +174,13 @@ export default class ProjectsService {
 
     return usageArr.reduce((a, b) => a + b, 0);
   }
+
+  public async deleteAllVersions(id: string) {
+    const schemas = await this.db
+      .delete(schemasTable)
+      .where(eq(schemasTable.project_id, id))
+      .returning();
+
+    return schemas;
+  }
 }

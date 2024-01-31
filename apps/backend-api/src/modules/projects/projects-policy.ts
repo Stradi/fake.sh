@@ -66,4 +66,20 @@ export default class ProjectsPolicy extends BasePolicy {
       'created_by'
     );
   }
+
+  public deleteAllVersions(
+    project: typeof projectsTable.$inferSelect,
+    accountData?: JwtClaims
+  ) {
+    return this.canMultiple(
+      [
+        `Project.${project.id}.DeleteAllVersions`,
+        'Project.&.DeleteAllVersions',
+        'Project.*.DeleteAllVersions',
+      ],
+      accountData,
+      project,
+      'created_by'
+    );
+  }
 }

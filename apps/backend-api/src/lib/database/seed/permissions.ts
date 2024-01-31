@@ -12,7 +12,7 @@ type Scope = string;
 type BaseActions = 'Index' | 'Show' | 'Create' | 'Update' | 'Destroy';
 
 type GeneralActions = 'CanViewAdminPanel';
-type ProjectActions = 'GetUsage';
+type ProjectActions = 'GetUsage' | 'DeleteAllVersions';
 type SchemaActions = 'GetLogs' | 'GetUsage';
 
 type Action = BaseActions | GeneralActions | ProjectActions | SchemaActions;
@@ -35,6 +35,7 @@ const DefaultPermissionMatrix: Record<
     'Project.*.Update',
     'Project.*.Destroy',
     'Project.*.GetUsage',
+    'Project.*.DeleteAllVersions',
     'Project.&.Update',
     'Project.&.Destroy',
 
@@ -74,6 +75,7 @@ const DefaultPermissionMatrix: Record<
     'Project.&.Update',
     'Project.&.Destroy',
     'Project.&.GetUsage',
+    'Project.&.DeleteAllVersions',
 
     'Schema.Create',
     'Schema.&.Show',
@@ -90,6 +92,7 @@ const DefaultPermissionMatrix: Record<
     'Project.&.Update',
     'Project.&.Destroy',
     'Project.&.GetUsage',
+    'Project.&.DeleteAllVersions',
 
     'Schema.Create',
     'Schema.&.Show',
