@@ -64,23 +64,23 @@ export default async function Page({ params: { projectSlug } }: Props) {
           />
           <KpiCard
             footer="Resets in 15 days"
-            metric={`${monthlyUsage.data.payload} requests`}
+            metric={`${monthlyUsage.data.payload ?? 0} requests`}
             progress={{
               value: 25,
-              startText: `${monthlyUsage.data.payload} req/month`,
+              startText: `${monthlyUsage.data.payload ?? 0} req/month`,
               endText: '5,000 req/month',
-              tooltip: `22% (${monthlyUsage.data.payload} requests)`,
+              tooltip: `22% (${monthlyUsage.data.payload ?? 0} requests)`,
             }}
             title="Monthly usage"
           />
           <KpiCard
             footer="Does not reset"
-            metric={`${allTimeUsage.data.payload} requests`}
+            metric={`${allTimeUsage.data.payload ?? 0} requests`}
             progress={{
               value: 0,
               startText: '0 req/month',
               endText: 'Unlimited req/month',
-              tooltip: `0% (${allTimeUsage.data.payload} requests)`,
+              tooltip: `0% (${allTimeUsage.data.payload ?? 0} requests)`,
             }}
             title="All time usage"
           />
