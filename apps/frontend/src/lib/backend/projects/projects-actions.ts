@@ -76,3 +76,25 @@ export async function deleteProject(
 
   return response;
 }
+
+export async function deleteAllVersions(
+  revalidatePaths: string[],
+  projectId: string
+) {
+  const client = await createServerActionClient();
+  const response = await client.sendRequest<{
+    message: string;
+    payload: ApiProject;
+  }>(`/api/v1/projects/${projectId}/versions`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  for (const path of revalidatePaths) {
+    revalidatePath(path);
+  }
+
+  return response;
+}

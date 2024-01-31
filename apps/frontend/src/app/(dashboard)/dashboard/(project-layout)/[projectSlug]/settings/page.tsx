@@ -3,6 +3,7 @@ import type { ApiProject } from '@lib/backend/backend-types';
 import createServerComponentClient from '@lib/backend/client/create-server-component-client';
 import { notFound } from 'next/navigation';
 import Header from '../../../_components/header';
+import DeleteAllVersionsButton from './_components/delete-all-versions-button';
 import DeleteProjectButton from './_components/delete-project-button';
 import ReactiveSaveButton from './_components/reactive-save-button';
 import UpdateSettingsForm from './_components/update-settings-form';
@@ -36,6 +37,7 @@ export default async function Page({ params: { projectSlug } }: Props) {
         <hr />
         <div className="-m-2 space-y-4 rounded-md border border-red-400 p-2">
           <DeleteProjectButton project={project.data.payload} />
+          <DeleteAllVersionsButton project={project.data.payload} />
         </div>
       </Container>
     </div>

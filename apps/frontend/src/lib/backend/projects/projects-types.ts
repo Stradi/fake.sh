@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { ApiProject } from '../backend-types';
+import type { ApiProject, ApiSchema } from '../backend-types';
 import type { ApiResponse } from '../client';
 
 export const CreateProjectFormSchema = z.object({
@@ -33,5 +33,13 @@ export type UpdateProjectApiFn = (
 export type DeleteProjectApiFn = (projectId: string) => Promise<
   ApiResponse<{
     message: string;
+    payload: ApiProject;
+  }>
+>;
+
+export type DeleteAllVersionsApiFn = (projectId: string) => Promise<
+  ApiResponse<{
+    message: string;
+    payload: ApiSchema[];
   }>
 >;
