@@ -13,3 +13,25 @@ export type CreateProjectApiFn = (data: CreateProjectFormType) => Promise<
     payload: ApiProject;
   }>
 >;
+
+export const UpdateProjectFormSchema = z.object({
+  name: z.string().min(3),
+  slug: z.string().min(3),
+});
+
+export type UpdateProjectFormType = z.infer<typeof UpdateProjectFormSchema>;
+export type UpdateProjectApiFn = (
+  projectId: string,
+  data: UpdateProjectFormType
+) => Promise<
+  ApiResponse<{
+    message: string;
+    payload: ApiProject;
+  }>
+>;
+
+export type DeleteProjectApiFn = (projectId: string) => Promise<
+  ApiResponse<{
+    message: string;
+  }>
+>;
