@@ -46,3 +46,7 @@ There is a `Makefile` at the root directory. Running `make up` will start Posgre
 You need to deploy frontend application on Vercel, Cloudflare Pages (this probably won't work because RSC but dunno), Netlify or something like that.
 
 Each application have an `env.example` file which lists the required environment variables for the application. Except frontend application. I forgot to update :(
+
+## License
+
+![matrix, spoon scene](./license.gif)
